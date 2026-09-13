@@ -184,16 +184,22 @@
     margin-top: 10px;
     text-align: center;
   }
-  #keepFlag {
+  #siFlag {
     position: absolute; top: 18px; left: 18px;
     font-family: -apple-system, sans-serif;
     font-size: 11px; font-weight: 700; color: #2E7D4F;
     opacity: 0; transition: opacity 0.12s ease; letter-spacing: 0.04em;
   }
-  #dropFlag {
+  #noFlag {
     position: absolute; top: 18px; right: 18px;
     font-family: -apple-system, sans-serif;
     font-size: 11px; font-weight: 700; color: #B0473F;
+    opacity: 0; transition: opacity 0.12s ease; letter-spacing: 0.04em;
+  }
+  #sobraFlag {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    font-family: -apple-system, sans-serif;
+    font-size: 11px; font-weight: 700; color: #6B6555;
     opacity: 0; transition: opacity 0.12s ease; letter-spacing: 0.04em;
   }
   #pinBadge {
@@ -204,39 +210,132 @@
     color: #C99A2E;
     display: none;
   }
-  #actions {
+  #deckStats {
+    text-align: center;
+    font-family: -apple-system, sans-serif;
+    font-size: 11.5px;
+    color: #A39D8C;
+    margin-bottom: 14px;
+    line-height: 1.8;
+  }
+  #statLinks span { text-decoration: underline; cursor: pointer; }
+  #studyActions {
     display: flex;
-    justify-content: center;
+    gap: 10px;
     margin-top: 14px;
   }
-  #keepBtn {
+  #studyActions button {
+    flex: 1;
     font-family: -apple-system, sans-serif;
-    font-size: 13px;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    min-height: 42px;
+  }
+  #btnNo { background: #FBF1EE; border: 1px solid #E3C1B8; color: #8A3A2A; }
+  #btnSi { background: #EEF6F0; border: 1px solid #B9D9C0; color: #21603A; }
+  #studyActions2 {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  #studyActions2 button {
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
     font-weight: 600;
     color: #6B6555;
     background: #FBF9F4;
     border: 1px solid #D8D2C2;
     border-radius: 20px;
-    padding: 9px 18px;
-    min-height: 38px;
+    padding: 8px 14px;
+    min-height: 36px;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
   }
   #keepBtn.pinned {
     background: #FBF1DC;
     border-color: #E0C88A;
     color: #8A6A18;
   }
-  #footer {
+  #resocontoBox {
     text-align: center;
-    margin-top: 12px;
-    font-family: -apple-system, sans-serif;
-    font-size: 11.5px;
-    color: #A39D8C;
-    line-height: 1.9;
+    padding: 40px 10px;
+    font-family: Georgia, serif;
   }
-  #footer #filterLink, #footer #resetLink { text-decoration: underline; cursor: pointer; }
+  #resocontoTexto {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #2C2A24;
+    margin-bottom: 22px;
+    white-space: pre-line;
+  }
+  #resocontoActions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  #resocontoActions button {
+    font-family: -apple-system, sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 20px;
+    cursor: pointer;
+    min-width: 200px;
+  }
+  #btnRepasar { background: #2C2A24; color: #FFFEFA; border: 1px solid #2C2A24; }
+  #btnVolverIndice { background: #FBF9F4; color: #6B6555; border: 1px solid #D8D2C2; }
+  #listHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2C2A24;
+    margin-bottom: 10px;
+  }
+  #listCerrar { font-weight: 500; color: #A39D8C; cursor: pointer; }
+  #listUl { list-style: none; margin: 0; padding: 0; }
+  #listUl li {
+    background: #FFFEFA;
+    border: 1px solid #D8D2C2;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    color: #2C2A24;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  #listUl li .txt { flex: 1; line-height: 1.4; }
+  #listUl li button {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6B6555;
+    background: #F3F0E8;
+    border: 1px solid #D8D2C2;
+    border-radius: 14px;
+    padding: 6px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #listVacio {
+    text-align: center;
+    font-family: -apple-system, sans-serif;
+    font-size: 12.5px;
+    color: #A39D8C;
+    margin-top: 20px;
+  }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -255,27 +354,59 @@
       <span id="deckTitle"></span>
       <a id="topIndexLink2" href="index.html">índice ›</a>
     </div>
-    <div id="stage">
-      <div id="back2" class="stack"></div>
-      <div id="back1" class="stack"></div>
-      <div id="card">
-        <div id="keepFlag">NO LA SÉ ›</div>
-        <div id="dropFlag">‹ YA LA SÉ</div>
-        <span id="pinBadge">★</span>
-        <div id="head">
-          <span id="tag"></span>
-          <span id="counter"></span>
-        </div>
-        <div id="body">
-          <p id="content"></p>
-        </div>
-        <div id="hint">tocá para pasar · deslizá a la derecha para repetirla · a la izquierda para sacarla del mazo</div>
+
+    <div id="deckStats">
+      <span id="statLine"></span>
+      <div id="statLinks">
+        <span id="favLink">★ favoritas</span> · <span id="discardLink">descartadas</span> · <span id="resetProgLink">↺ reiniciar progreso</span>
       </div>
     </div>
-    <div id="actions"><button id="keepBtn">☆ favorita</button></div>
-    <div id="footer">
-      <span id="discardedCount">0</span> sabidas · <span id="pinnedCount">0</span> favoritas<br>
-      <span id="filterLink">repasar solo favoritas</span><span id="footerSep"> · </span><span id="resetLink">quitar favoritas de este mazo</span>
+
+    <div id="studyBox">
+      <div id="stage">
+        <div id="back2" class="stack"></div>
+        <div id="back1" class="stack"></div>
+        <div id="card">
+          <div id="siFlag">ME SALE ›</div>
+          <div id="noFlag">‹ NO ME SALE</div>
+          <div id="sobraFlag">▲ DE SOBRA</div>
+          <span id="pinBadge">★</span>
+          <div id="head">
+            <span id="tag"></span>
+            <span id="counter"></span>
+          </div>
+          <div id="body">
+            <p id="content"></p>
+          </div>
+          <div id="hint">tocá para pasar · deslizá a la derecha para repetirla · a la izquierda para sacarla del mazo</div>
+        </div>
+      </div>
+      <div id="studyActions">
+        <button id="btnNo">← no me sale</button>
+        <button id="btnSi">me sale →</button>
+      </div>
+      <div id="studyActions2">
+        <button id="keepBtn">☆ favorita</button>
+        <button id="btnSobra">▲ la sé de sobra</button>
+        <button id="btnVia">✕ no me interesa</button>
+      </div>
+    </div>
+
+    <div id="resocontoBox" class="hidden">
+      <p id="resocontoTexto"></p>
+      <div id="resocontoActions">
+        <button id="btnRepasar" class="primary">Repasar de nuevo</button>
+        <button id="btnVolverIndice">Volver al mazo</button>
+      </div>
+    </div>
+
+    <div id="listBox" class="hidden">
+      <div id="listHeader">
+        <span id="listTitulo"></span>
+        <span id="listCerrar">✕ cerrar</span>
+      </div>
+      <ul id="listUl"></ul>
+      <p id="listVacio" class="hidden">No hay tarjetas acá todavía.</p>
     </div>
   </div>
 
@@ -1229,24 +1360,29 @@ function visibleDeckKeys(){
   return activeGroup ? keys.filter(activeGroup.match) : keys;
 }
 
-// ============ STATE ============
+// ============ ESTADO POR TARJETA ============
+// stato[deckKey][idx] = { descartada: null|"sobra"|"via", favorito: bool, dias: 0-3, giorno: "YYYY-MM-DD"|null }
 let currentDeckKey = null;
-let bag = [];
-let removed = new Set();
-let pinned = new Set();
-let onlyPinned = false;
-let shown = 0;
-let currentIdx = null;
+let stato = {};        // estado del mazo actualmente abierto
+let coda = [];          // cola de índices para esta sesión de estudio
+let indice = 0;          // posición actual dentro de coda
+let flipped = false;
+let sessionAprendidas = 0; // cuántas llegaron a 3 días en esta sesión
 
 const homeEl = document.getElementById('home');
 const deckViewEl = document.getElementById('deckView');
 const deckListEl = document.getElementById('deckList');
 const card = document.getElementById('card');
-const keepFlag = document.getElementById('keepFlag');
-const dropFlag = document.getElementById('dropFlag');
+const siFlag = document.getElementById('siFlag');
+const noFlag = document.getElementById('noFlag');
+const sobraFlag = document.getElementById('sobraFlag');
+const studyBox = document.getElementById('studyBox');
+const resocontoBox = document.getElementById('resocontoBox');
+const listBox = document.getElementById('listBox');
+const deckStatsEl = document.getElementById('deckStats');
 
-function removedKey(deckKey){ return 'mazo_removed_' + deckKey; }
-function pinnedKey(deckKey){ return 'mazo_pinned_' + deckKey; }
+function statoKey(deckKey){ return 'mazo_stato_' + deckKey; }
+const oggi = () => new Date().toISOString().slice(0,10);
 
 const hasClaudeStorage = (typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function');
 
@@ -1262,42 +1398,70 @@ async function storeGet(key){
 
 async function storeSet(key, value){
   if(hasClaudeStorage){
-    try {
-      await window.storage.set(key, value, false);
-      return;
-    } catch(e) { /* cae al fallback */ }
+    try { await window.storage.set(key, value, false); return; } catch(e) { /* cae al fallback */ }
   }
   try { localStorage.setItem(key, value); } catch(e) {}
 }
 
-async function loadSet(key){
-  const raw = await storeGet(key);
-  if(!raw) return new Set();
-  try { return new Set(JSON.parse(raw)); } catch(e) { return new Set(); }
+async function loadStato(deckKey){
+  const raw = await storeGet(statoKey(deckKey));
+  if(!raw) return {};
+  try { return JSON.parse(raw); } catch(e) { return {}; }
 }
 
-async function saveRemoved(deckKey){
-  await storeSet(removedKey(deckKey), JSON.stringify(Array.from(removed)));
+async function saveStato(){
+  await storeSet(statoKey(currentDeckKey), JSON.stringify(stato));
 }
 
-async function savePinned(deckKey){
-  await storeSet(pinnedKey(deckKey), JSON.stringify(Array.from(pinned)));
+// ============ HELPERS DE PROGRESO (igual que CELI4) ============
+function get(idx){ return stato[idx] || {}; }
+function isDescartada(idx){ return !!get(idx).descartada; }
+function isFavorita(idx){ return !!get(idx).favorito; }
+function prog(idx){ const s = get(idx); return {dias: s.dias||0, giorno: s.giorno||null}; }
+function categoria(idx){
+  if(isDescartada(idx)) return "descartada";
+  const p = prog(idx);
+  if(p.dias >= 3) return "aprendida";
+  if(p.dias >= 1) return "proceso";
+  return "pendiente";
+}
+function inGiro(idx){ const c = categoria(idx); return c === "pendiente" || c === "proceso"; }
+
+function contaDeck(deckKey, deckStato){
+  const deck = decks[deckKey];
+  const c = {pendiente:0, proceso:0, aprendida:0, descartada:0, favorita:0};
+  deck.cards.forEach((_, idx) => {
+    const s = deckStato[idx] || {};
+    if(s.descartada) c.descartada++;
+    else if((s.dias||0) >= 3) c.aprendida++;
+    else if((s.dias||0) >= 1) c.proceso++;
+    else c.pendiente++;
+    if(s.favorito) c.favorita++;
+  });
+  return c;
 }
 
+function cardLabel(deckKey, idx){
+  const deck = decks[deckKey];
+  const c = deck.cards[idx];
+  return deck.type === 'qa' ? c.q : c.text.replace(/<[^>]+>/g,' ');
+}
+
+// ============ HOME ============
 async function renderHome(){
   document.getElementById('homeTitle').textContent = activeGroup ? activeGroup.title : 'Mis mazos';
   document.getElementById('homeSub').textContent = activeGroup ? activeGroup.sub : 'Tocá un mazo para repasarlo';
   deckListEl.innerHTML = '';
   for(const key of visibleDeckKeys()){
     const deck = decks[key];
-    const rem = await loadSet(removedKey(key));
-    const pin = await loadSet(pinnedKey(key));
+    const deckStato = await loadStato(key);
+    const c = contaDeck(key, deckStato);
     const total = deck.cards.length;
-    const discarded = rem.size;
-    const kept = pin.size;
+    const enGiro = c.pendiente + c.proceso;
     const notes = [];
-    if(discarded) notes.push(discarded + ' sabidas');
-    if(kept) notes.push(kept + ' favoritas');
+    if(c.aprendida) notes.push(c.aprendida + ' aprendidas');
+    if(c.descartada) notes.push(c.descartada + ' descartadas');
+    if(c.favorita) notes.push(c.favorita + ' favoritas');
     const tile = document.createElement('div');
     tile.className = 'deck-tile';
     tile.innerHTML = `
@@ -1306,7 +1470,7 @@ async function renderHome(){
         <div class="deck-name">${deck.label}</div>
       </div>
       <div style="display:flex;align-items:center;">
-        <div class="deck-meta">${total - discarded} / ${total}${notes.length ? '<br>' + notes.join(' · ') : ''}</div>
+        <div class="deck-meta">${enGiro} / ${total} en giro${notes.length ? '<br>' + notes.join(' · ') : ''}</div>
         <div class="chev">›</div>
       </div>
     `;
@@ -1315,177 +1479,289 @@ async function renderHome(){
   }
 }
 
+// ============ ABRIR MAZO / EMPEZAR SESIÓN ============
 async function openDeck(key){
   currentDeckKey = key;
-  shown = 0;
-  onlyPinned = false;
-  removed = await loadSet(removedKey(key));
-  pinned = await loadSet(pinnedKey(key));
-  refillBag();
-  document.getElementById('deckTitle').textContent = decks[key].label;
+  stato = await loadStato(key);
   homeEl.style.display = 'none';
   deckViewEl.style.display = 'block';
-  render();
+  document.getElementById('deckTitle').textContent = decks[key].label;
+  iniciarSesion();
 }
 
-function backToHome(){
-  deckViewEl.style.display = 'none';
-  homeEl.style.display = 'block';
-  renderHome();
-}
-
-function activeIndices(){
+function iniciarSesion(){
   const deck = decks[currentDeckKey];
-  return deck.cards
-    .map((c,i)=>i)
-    .filter(i => !removed.has(i) && (!onlyPinned || pinned.has(i)));
-}
-
-function refillBag(){
-  bag = activeIndices();
-  for(let i=bag.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [bag[i],bag[j]] = [bag[j],bag[i]];
+  coda = deck.cards.map((_, idx) => idx).filter(idx => inGiro(idx));
+  for(let i = coda.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [coda[i], coda[j]] = [coda[j], coda[i]];
+  }
+  indice = 0;
+  sessionAprendidas = 0;
+  mostrarStats();
+  if(coda.length === 0){
+    mostrarResoconto(true);
+  } else {
+    studyBox.classList.remove('hidden');
+    resocontoBox.classList.add('hidden');
+    listBox.classList.add('hidden');
+    disegnaCarta();
   }
 }
 
-function updateFooter(){
-  document.getElementById('discardedCount').textContent = removed.size;
-  document.getElementById('pinnedCount').textContent = pinned.size;
-  const filterLink = document.getElementById('filterLink');
-  filterLink.textContent = onlyPinned ? 'ver todo el mazo' : 'repasar solo favoritas';
-  filterLink.style.display = (pinned.size > 0 || onlyPinned) ? 'inline' : 'none';
-  const resetLink = document.getElementById('resetLink');
-  resetLink.style.display = pinned.size > 0 ? 'inline' : 'none';
-  document.getElementById('footerSep').style.display = (pinned.size > 0 && filterLink.style.display !== 'none') ? 'inline' : 'none';
+function mostrarStats(){
+  const c = contaDeck(currentDeckKey, stato);
+  const total = decks[currentDeckKey].cards.length;
+  document.getElementById('statLine').textContent =
+    `${c.pendiente + c.proceso} en giro · ${c.aprendida} aprendidas · ${c.descartada} descartadas · ${c.favorita} favoritas · ${total} en total`;
 }
 
-function updateKeepBtn(){
-  const btn = document.getElementById('keepBtn');
-  if(currentIdx === null){ btn.style.display = 'none'; return; }
-  btn.style.display = 'inline-flex';
-  const isPinned = pinned.has(currentIdx);
-  btn.textContent = isPinned ? '★ favorita — quitar' : '☆ favorita';
-  btn.className = isPinned ? 'pinned' : '';
-}
+// ============ TARJETA DE ESTUDIO ============
+function disegnaCarta(){
+  if(indice >= coda.length){ mostrarResoconto(false); return; }
+  const deck = decks[currentDeckKey];
+  const idx = coda[indice];
+  const c = deck.cards[idx];
+  flipped = false;
 
-let flipped = false;
+  const tagEl = document.getElementById('tag');
+  const col = deck.tagColor ? deck.tagColor : deck.catColors[c.cat];
+  tagEl.textContent = c.cat;
+  tagEl.style.background = col.bg;
+  tagEl.style.color = col.text;
+
+  document.getElementById('pinBadge').style.display = isFavorita(idx) ? 'inline' : 'none';
+  document.getElementById('content').innerHTML = deck.type === 'qa' ? c.q : c.text;
+  document.getElementById('counter').textContent = (indice + 1) + ' / ' + coda.length;
+  updateHint();
+  updateKeepBtn();
+
+  card.style.transition = 'none';
+  card.style.transform = 'translateX(0) rotate(0deg)';
+  card.style.opacity = '1';
+  siFlag.style.opacity = 0; noFlag.style.opacity = 0; sobraFlag.style.opacity = 0;
+  requestAnimationFrame(() => { card.style.transition = ''; });
+}
 
 function updateHint(){
   const deck = decks[currentDeckKey];
   const hintEl = document.getElementById('hint');
   if(deck.type === 'qa'){
     hintEl.textContent = flipped
-      ? 'tocá para ver la pregunta · ← ya la sé · no la sé →'
-      : 'tocá para ver la respuesta · ← ya la sé · no la sé →';
+      ? 'tocá para ver la pregunta · ← no me sale · me sale →'
+      : 'tocá para ver la respuesta · ← no me sale · me sale →';
   } else {
-    hintEl.textContent = 'tocá para pasar · ← ya la sé (sale del mazo) · no la sé → (sigue)';
+    hintEl.textContent = '← no me sale · me sale → · ▲ la sé de sobra';
   }
 }
 
-function render(){
-  const deck = decks[currentDeckKey];
-  const activeTotal = activeIndices().length;
-  flipped = false;
-  if(activeTotal <= 0){
-    document.getElementById('tag').textContent = '';
-    document.getElementById('content').innerHTML = onlyPinned
-      ? 'No te queda ninguna tarjeta favorita en este mazo.'
-      : 'Completaste el mazo. Reiniciá para volver a verlas todas.';
-    document.getElementById('counter').textContent = '';
-    document.getElementById('pinBadge').style.display = 'none';
-    currentIdx = null;
-    updateFooter();
-    updateKeepBtn();
-    return;
-  }
-  if(bag.length === 0) refillBag();
-  const idx = bag.pop();
-  currentIdx = idx;
-  const c = deck.cards[idx];
-  shown++;
-  const tagEl = document.getElementById('tag');
-  const col = deck.tagColor ? deck.tagColor : deck.catColors[c.cat];
-  tagEl.textContent = c.cat;
-  tagEl.style.background = col.bg;
-  tagEl.style.color = col.text;
-  document.getElementById('pinBadge').style.display = pinned.has(idx) ? 'inline' : 'none';
-  document.getElementById('content').innerHTML = deck.type === 'qa' ? c.q : c.text;
-  document.getElementById('counter').textContent = shown + ' / ' + activeTotal;
-  updateFooter();
-  updateKeepBtn();
-  updateHint();
+function updateKeepBtn(){
+  const idx = coda[indice];
+  const btn = document.getElementById('keepBtn');
+  const fav = isFavorita(idx);
+  btn.textContent = fav ? '★ favorita — quitar' : '☆ favorita';
+  btn.className = fav ? 'pinned' : '';
 }
 
 function toggleFlip(){
   const deck = decks[currentDeckKey];
-  if(deck.type !== 'qa' || currentIdx === null) return;
+  if(deck.type !== 'qa') return;
+  const idx = coda[indice];
+  const c = deck.cards[idx];
   flipped = !flipped;
-  const c = deck.cards[currentIdx];
   document.getElementById('content').innerHTML = flipped ? c.a : c.q;
   updateHint();
 }
 
-function goNext(dropCurrent){
-  if(dropCurrent && currentIdx !== null){
-    removed.add(currentIdx);
-    saveRemoved(currentDeckKey);
-    if(pinned.has(currentIdx)){
-      pinned.delete(currentIdx);
-      savePinned(currentDeckKey);
+// esito: "no" | "si" | "sobra" | "via"
+async function rispondi(esito){
+  const deck = decks[currentDeckKey];
+  if(deck.type === 'qa' && !flipped && (esito === 'no' || esito === 'si')){ toggleFlip(); return; }
+  const idx = coda[indice];
+  const s = stato[idx] ? {...stato[idx]} : {};
+
+  if(esito === 'si' || esito === 'no'){
+    if(esito === 'si'){
+      if(s.giorno !== oggi()) s.dias = Math.min(3, (s.dias||0) + 1);
+      if(s.dias >= 3) sessionAprendidas++;
+    } else {
+      s.dias = 0;
     }
+    s.giorno = oggi();
+  } else if(esito === 'sobra'){
+    s.descartada = 'sobra';
+  } else if(esito === 'via'){
+    s.descartada = 'via';
   }
-  card.style.transform = dropCurrent ? 'translateX(-120%) rotate(-8deg)' : 'translateX(120%) rotate(8deg)';
+  stato[idx] = s;
+  await saveStato();
+
+  if(esito === 'sobra' || esito === 'via'){
+    card.style.transform = 'translateY(-110%) scale(.94)';
+  } else {
+    card.style.transform = `translateX(${esito==='si'?'':'-'}120%) rotate(${esito==='si'?12:-12}deg)`;
+  }
   card.style.opacity = '0';
-  keepFlag.style.opacity = '0';
-  dropFlag.style.opacity = '0';
-  setTimeout(()=>{
-    render();
-    card.style.transition = 'none';
-    card.style.transform = 'translateX(0)';
-    requestAnimationFrame(()=>{
-      card.style.transition = 'transform 0.18s ease, opacity 0.18s ease';
-      card.style.opacity = '1';
-    });
-  }, 180);
+  siFlag.style.opacity = 0; noFlag.style.opacity = 0; sobraFlag.style.opacity = 0;
+  setTimeout(() => { indice++; mostrarStats(); disegnaCarta(); }, 180);
 }
 
-card.addEventListener('click', () => {
-  if(dragged) return;
+async function alternaFavorito(){
+  const idx = coda[indice];
+  const s = stato[idx] ? {...stato[idx]} : {};
+  s.favorito = !s.favorito;
+  stato[idx] = s;
+  await saveStato();
+  document.getElementById('pinBadge').style.display = s.favorito ? 'inline' : 'none';
+  updateKeepBtn();
+  mostrarStats();
+}
+
+// ============ RESOCONTO (fin de sesión) ============
+function mostrarResoconto(sinPendientesDeEntrada){
+  studyBox.classList.add('hidden');
+  listBox.classList.add('hidden');
+  resocontoBox.classList.remove('hidden');
+  const c = contaDeck(currentDeckKey, stato);
+  const enGiro = c.pendiente + c.proceso;
+  let texto;
+  if(sinPendientesDeEntrada){
+    texto = enGiro === 0
+      ? 'No te quedan tarjetas pendientes en este mazo.\nSi querés repasar igual, restaurá alguna desde ★ favoritas o descartadas, o reiniciá el progreso.'
+      : '';
+  } else {
+    texto = `Sesión terminada.\n${sessionAprendidas ? sessionAprendidas + ' llegaron a 3 días y ya se consideran aprendidas.\n' : ''}Quedan ${enGiro} tarjetas en giro para la próxima.`;
+  }
+  document.getElementById('resocontoTexto').textContent = texto;
+  document.getElementById('btnRepasar').style.display = enGiro > 0 ? 'inline-block' : 'none';
+}
+
+// ============ FAVORITAS / DESCARTADAS (listas) ============
+function mostrarLista(tipo){
+  studyBox.classList.add('hidden');
+  resocontoBox.classList.add('hidden');
+  listBox.classList.remove('hidden');
   const deck = decks[currentDeckKey];
-  if(deck.type === 'qa') toggleFlip();
-  else goNext(false);
-});
+  const ul = document.getElementById('listUl');
+  ul.innerHTML = '';
+  const idxs = deck.cards
+    .map((_, idx) => idx)
+    .filter(idx => tipo === 'favoritas' ? isFavorita(idx) : isDescartada(idx));
+
+  document.getElementById('listTitulo').textContent = tipo === 'favoritas'
+    ? `★ Favoritas (${idxs.length})`
+    : `Descartadas (${idxs.length})`;
+  document.getElementById('listVacio').classList.toggle('hidden', idxs.length > 0);
+
+  idxs.forEach(idx => {
+    const li = document.createElement('li');
+    const txt = document.createElement('span');
+    txt.className = 'txt';
+    txt.innerHTML = cardLabel(currentDeckKey, idx);
+    li.appendChild(txt);
+    const btn = document.createElement('button');
+    if(tipo === 'favoritas'){
+      btn.textContent = 'quitar';
+      btn.onclick = async () => {
+        const s = {...stato[idx]}; delete s.favorito; stato[idx] = s; await saveStato();
+        mostrarLista('favoritas'); mostrarStats();
+      };
+    } else {
+      const s0 = stato[idx];
+      btn.textContent = s0.descartada === 'sobra' ? 'la sabía de sobra' : 'no me interesaba';
+      btn.title = 'Tocar para volver a incluirla en el mazo';
+      btn.onclick = async () => {
+        const s = {...stato[idx]}; delete s.descartada; stato[idx] = s; await saveStato();
+        mostrarLista('descartadas'); mostrarStats();
+      };
+    }
+    li.appendChild(btn);
+    ul.appendChild(li);
+  });
+}
+
+function cerrarLista(){
+  listBox.classList.add('hidden');
+  if(coda.length > 0 && indice < coda.length){
+    studyBox.classList.remove('hidden');
+  } else {
+    mostrarResoconto(false);
+  }
+}
+
+// ============ REINICIAR PROGRESO (no toca descartadas) ============
+async function reiniciarProgreso(){
+  const c = contaDeck(currentDeckKey, stato);
+  const afectadas = c.pendiente + c.proceso + c.aprendida; // todo lo no-descartado tiene dias/favorito potencialmente
+  if(!confirm('Se borra el progreso de repaso (días acertados) y las favoritas de este mazo. Las tarjetas descartadas NO se tocan. ¿Seguimos?')) return;
+  for(const idx in stato){
+    const s = stato[idx];
+    if(!s) continue;
+    const limpio = {};
+    if(s.descartada) limpio.descartada = s.descartada;
+    if(Object.keys(limpio).length) stato[idx] = limpio;
+    else delete stato[idx];
+  }
+  await saveStato();
+  iniciarSesion();
+}
+
+// ============ NAVEGACIÓN ============
+function backToHome(){
+  deckViewEl.style.display = 'none';
+  homeEl.style.display = 'block';
+  renderHome();
+}
+
+document.getElementById('btnNo').addEventListener('click', () => rispondi('no'));
+document.getElementById('btnSi').addEventListener('click', () => rispondi('si'));
+document.getElementById('btnSobra').addEventListener('click', () => rispondi('sobra'));
+document.getElementById('btnVia').addEventListener('click', () => rispondi('via'));
+document.getElementById('keepBtn').addEventListener('click', alternaFavorito);
+document.getElementById('btnRepasar').addEventListener('click', iniciarSesion);
+document.getElementById('btnVolverIndice').addEventListener('click', backToHome);
+document.getElementById('favLink').addEventListener('click', () => mostrarLista('favoritas'));
+document.getElementById('discardLink').addEventListener('click', () => mostrarLista('descartadas'));
+document.getElementById('resetProgLink').addEventListener('click', reiniciarProgreso);
+document.getElementById('listCerrar').addEventListener('click', cerrarLista);
+
+card.addEventListener('click', () => { if(!dragged) toggleFlip(); });
 
 let startX = 0, startY = 0, dragging = false, dragged = false, activePointerId = null;
 card.addEventListener('pointerdown', e => {
-  startX = e.clientX;
-  startY = e.clientY;
-  dragging = true;
-  dragged = false;
+  startX = e.clientX; startY = e.clientY;
+  dragging = true; dragged = false;
   activePointerId = e.pointerId;
   try { card.setPointerCapture(e.pointerId); } catch(err) {}
 });
 card.addEventListener('pointermove', e => {
   if(!dragging || e.pointerId !== activePointerId) return;
   const dx = e.clientX - startX;
-  if(Math.abs(dx) > 10) dragged = true;
-  card.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx/18) + 'deg)';
-  if(dx > 20){ keepFlag.style.opacity = Math.min(dx/80,1); dropFlag.style.opacity = 0; }
-  else if(dx < -20){ dropFlag.style.opacity = Math.min(-dx/80,1); keepFlag.style.opacity = 0; }
-  else { keepFlag.style.opacity = 0; dropFlag.style.opacity = 0; }
+  const dy = e.clientY - startY;
+  if(Math.abs(dx) > 10 || Math.abs(dy) > 10) dragged = true;
+  if(Math.abs(dy) > Math.abs(dx) && dy < -20){
+    card.style.transform = 'translateY(' + dy + 'px)';
+    sobraFlag.style.opacity = Math.min(1, (-dy - 20) / 60);
+    siFlag.style.opacity = 0; noFlag.style.opacity = 0;
+  } else {
+    card.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx/18) + 'deg)';
+    sobraFlag.style.opacity = 0;
+    siFlag.style.opacity = dx > 25 ? Math.min(1,(dx-25)/60) : 0;
+    noFlag.style.opacity = dx < -25 ? Math.min(1,(-dx-25)/60) : 0;
+  }
 });
 function endDrag(e){
   if(!dragging || e.pointerId !== activePointerId) return;
   dragging = false;
   const dx = e.clientX - startX;
   const dy = e.clientY - startY;
-  if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)){
-    goNext(dx < 0);
+  if(dy < -80 && Math.abs(dy) > Math.abs(dx)){
+    rispondi('sobra');
+  } else if(Math.abs(dx) > 85 && Math.abs(dx) > Math.abs(dy)){
+    rispondi(dx > 0 ? 'si' : 'no');
   } else {
-    card.style.transform = 'translateX(0)';
-    keepFlag.style.opacity = 0;
-    dropFlag.style.opacity = 0;
+    card.style.transform = 'translateX(0) translateY(0)';
+    siFlag.style.opacity = 0; noFlag.style.opacity = 0; sobraFlag.style.opacity = 0;
   }
 }
 card.addEventListener('pointerup', endDrag);
@@ -1493,42 +1769,13 @@ card.addEventListener('pointercancel', endDrag);
 
 const backBtnEl = document.getElementById('backBtn');
 backBtnEl.addEventListener('click', backToHome);
-backBtnEl.addEventListener('touchend', (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  backToHome();
-});
+backBtnEl.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); backToHome(); });
 
-const keepBtnEl = document.getElementById('keepBtn');
-keepBtnEl.addEventListener('click', async (e) => {
-  e.stopPropagation();
-  if(currentIdx === null) return;
-  if(pinned.has(currentIdx)) pinned.delete(currentIdx);
-  else pinned.add(currentIdx);
-  await savePinned(currentDeckKey);
-  document.getElementById('pinBadge').style.display = pinned.has(currentIdx) ? 'inline' : 'none';
-  updateKeepBtn();
-  updateFooter();
-});
-
-document.getElementById('filterLink').addEventListener('click', (e) => {
-  e.stopPropagation();
-  onlyPinned = !onlyPinned;
-  shown = 0;
-  refillBag();
-  render();
-});
-
-document.getElementById('resetLink').addEventListener('click', async (e) => {
-  e.stopPropagation();
-  if(pinned.size === 0){ return; }
-  if(!confirm('¿Quitar la marca de favorita de las ' + pinned.size + ' tarjetas de este mazo? Las que ya diste por sabidas no se tocan.')) return;
-  pinned = new Set();
-  onlyPinned = false;
-  await storeSet(pinnedKey(currentDeckKey), JSON.stringify([]));
-  shown = 0;
-  refillBag();
-  render();
+document.addEventListener('keydown', (e) => {
+  if(deckViewEl.style.display !== 'block' || studyBox.classList.contains('hidden')) return;
+  if(e.key === 'ArrowLeft') rispondi('no');
+  if(e.key === 'ArrowRight') rispondi('si');
+  if(e.key === 'ArrowUp'){ e.preventDefault(); rispondi('sobra'); }
 });
 
 renderHome();
