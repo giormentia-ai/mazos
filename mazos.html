@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis mazos</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #EDE9DF;
+    font-family: Georgia, 'Times New Roman', serif;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+  #app { width: 100%; max-width: 380px; }
+
+  /* ---- HOME ---- */
+  #topIndexLink {
+    display: inline-block;
+    font-family: -apple-system, sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #6B6555;
+    text-decoration: none;
+    margin-bottom: 14px;
+  }
+  #topIndexLink2 {
+    margin-left: auto;
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B6555;
+    text-decoration: none;
+    padding: 10px 4px 10px 14px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+  #home h1 {
+    font-size: 22px;
+    margin: 0 0 4px 0;
+    color: #2C2A24;
+  }
+  #home p.sub {
+    font-family: -apple-system, sans-serif;
+    font-size: 12.5px;
+    color: #A39D8C;
+    margin: 0 0 20px 0;
+  }
+  .deck-tile {
+    background: #FFFEFA;
+    border: 1px solid #D8D2C2;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .deck-tile:active {
+    transform: scale(0.98);
+  }
+  .deck-left { display:flex; align-items:center; gap: 12px; }
+  .deck-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .deck-name {
+    font-size: 17px;
+    color: #2C2A24;
+  }
+  .deck-meta {
+    font-family: -apple-system, sans-serif;
+    font-size: 11.5px;
+    color: #A39D8C;
+    text-align: right;
+    line-height: 1.4;
+  }
+  .chev { color: #C9C2AF; font-size: 18px; margin-left: 10px; }
+
+  /* ---- DECK VIEW ---- */
+  #deckView { display: none; }
+  #topBar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-family: -apple-system, sans-serif;
+    position: relative;
+    z-index: 20;
+  }
+  #backBtn {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6B6555;
+    cursor: pointer;
+    padding: 10px 14px 10px 4px;
+    margin: -10px 0 -10px -4px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+  #deckTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2C2A24;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  #stage {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    user-select: none;
+    touch-action: pan-y;
+  }
+  .stack {
+    position: absolute;
+    inset: 0;
+    background: #FBF9F4;
+    border: 1px solid #D8D2C2;
+    border-radius: 10px;
+  }
+  #back2 { transform: translateY(14px) scale(0.94); }
+  #back1 { transform: translateY(7px) scale(0.97); }
+  #card {
+    position: absolute;
+    inset: 0;
+    background: #FFFEFA;
+    border: 1px solid #D8D2C2;
+    border-radius: 10px;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  #head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  #tag {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  #counter {
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    color: #A39D8C;
+  }
+  #body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  #content {
+    font-size: 17px;
+    line-height: 1.55;
+    color: #2C2A24;
+    margin: 0;
+  }
+  #hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #B5AF9E;
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  #keepFlag {
+    position: absolute; top: 18px; left: 18px;
+    font-family: -apple-system, sans-serif;
+    font-size: 11px; font-weight: 700; color: #2E7D4F;
+    opacity: 0; transition: opacity 0.12s ease; letter-spacing: 0.04em;
+  }
+  #dropFlag {
+    position: absolute; top: 18px; right: 18px;
+    font-family: -apple-system, sans-serif;
+    font-size: 11px; font-weight: 700; color: #B0473F;
+    opacity: 0; transition: opacity 0.12s ease; letter-spacing: 0.04em;
+  }
+  #pinBadge {
+    position: absolute;
+    bottom: 14px;
+    right: 18px;
+    font-size: 15px;
+    color: #C99A2E;
+    display: none;
+  }
+  #actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  #keepBtn {
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B6555;
+    background: #FBF9F4;
+    border: 1px solid #D8D2C2;
+    border-radius: 20px;
+    padding: 9px 18px;
+    min-height: 38px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+  }
+  #keepBtn.pinned {
+    background: #FBF1DC;
+    border-color: #E0C88A;
+    color: #8A6A18;
+  }
+  #footer {
+    text-align: center;
+    margin-top: 12px;
+    font-family: -apple-system, sans-serif;
+    font-size: 11.5px;
+    color: #A39D8C;
+    line-height: 1.9;
+  }
+  #footer #filterLink, #footer #resetLink { text-decoration: underline; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="home">
+    <a id="topIndexLink" href="index.html">‹ índice de mazos</a>
+    <h1 id="homeTitle">Mis mazos</h1>
+    <p class="sub" id="homeSub">Tocá un mazo para repasarlo</p>
+    <div id="deckList"></div>
+  </div>
+
+  <div id="deckView">
+    <div id="topBar">
+      <span id="backBtn">‹ atrás</span>
+      <span id="deckTitle"></span>
+      <a id="topIndexLink2" href="index.html">índice ›</a>
+    </div>
+    <div id="stage">
+      <div id="back2" class="stack"></div>
+      <div id="back1" class="stack"></div>
+      <div id="card">
+        <div id="keepFlag">NO LA SÉ ›</div>
+        <div id="dropFlag">‹ YA LA SÉ</div>
+        <span id="pinBadge">★</span>
+        <div id="head">
+          <span id="tag"></span>
+          <span id="counter"></span>
+        </div>
+        <div id="body">
+          <p id="content"></p>
+        </div>
+        <div id="hint">tocá para pasar · deslizá a la derecha para repetirla · a la izquierda para sacarla del mazo</div>
+      </div>
+    </div>
+    <div id="actions"><button id="keepBtn">☆ favorita</button></div>
+    <div id="footer">
+      <span id="discardedCount">0</span> sabidas · <span id="pinnedCount">0</span> favoritas<br>
+      <span id="filterLink">repasar solo favoritas</span><span id="footerSep"> · </span><span id="resetLink">quitar favoritas de este mazo</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============ DATA ============
+const decks = {
+  italiano1_it: {
+    label: "Italiano 1 (IT → ES)",
+    dot: "#72243E",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#72243E"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"Infatti", a:"de hecho."},
+      {cat:"italiano", q:"Poiché", a:"puesto que, ya que (=in quanto). Ej: \"È vero, poiché è stato provato in tribunale.\""},
+      {cat:"italiano", q:"Richiedere", a:"solicitar, volver a pedir."},
+      {cat:"italiano", q:"Me dijo que vendría a buscarme.", a:"Tu respuesta: «Mi ha detto che verrebbe a cercarmi» — incorrecta.<br>Correcto: «Mi ha detto che <strong>sarebbe venuto</strong> a cercarmi».<br>Explicación: comunicación (dire) + futuro nel passato → condizionale passato."},
+      {cat:"italiano", q:"Pur", a:"aún, aún cuando (siempre pur + gerundio en esta acepción). Ej: \"Pur essendo medico, fatico a uscirne.\" / \"...pur potendo essere...\" (aún pudiendo ser)."},
+      {cat:"italiano", q:"Imprevedibile", a:"imprevisible."},
+      {cat:"italiano", q:"Ci penso io", a:"yo me ocupo."},
+      {cat:"italiano", q:"Giusto?", a:"en el sentido de ¿cierto?"},
+      {cat:"italiano", q:"Bensì", a:"sino (=ma). Ej: \"Lavorare qua non è lavoro bensì piacere.\" Con anziché sería: \"Lavorare qua é un piacere anziché un lavoro.\""},
+      {cat:"italiano", q:"Addirittura", a:"incluso, inclusive (=persino, perfino, anche). Ej: \"Mi piace il cannabis, alcuni dicono addirittura che abbia proprietà magiche.\""},
+      {cat:"italiano", q:"Tranne", a:"excepto, salvo. Tranne che: a menos que, a no ser que."},
+      {cat:"italiano", q:"Altrove", a:"en otro lugar. Ej: \"Nel libro non c'erano le informazioni che cercava la studentessa, così dovette cercare altrove.\""},
+      {cat:"italiano", q:"Nos prometieron que terminarían la obra antes del verano.", a:"Tu respuesta: «Ci hanno promesso che finirebbero la opera prima di estate» — incorrecta.<br>Correcto: «Ci hanno promesso che <strong>avrebbero finito</strong> la opera prima di estate».<br>Explicación: promesa (comunicación) + futuro → condizionale passato, no presente."},
+      {cat:"italiano", q:"Ciascun/ciascuno", a:"cada uno (=ognuno)."},
+      {cat:"italiano", q:"Man mano", a:"paso a paso, de a poco, gradualmente."},
+      {cat:"italiano", q:"Una volta", a:"antes, en el pasado, hace tiempo."},
+      {cat:"italiano", q:"Di più", a:"más, después de un verbo. Ej: \"Devi studiare di più\". Pero \"in più\" es de más/extra: \"Ho comprato un biglietto in più\"."},
+      {cat:"italiano", q:"Ormai/Oramai", a:"1) ya. 2) a esta hora, a esta altura. Ej: \"Ormai i miei ospiti avrebbero dovuto essere già qui. La cena si fredda.\""},
+      {cat:"italiano", q:"Non appena", a:"en cuanto, ni bien. Ej: \"Ti richiamo non appena abbiamo novità.\""}
+    ]
+  },
+  italiano1_es: {
+    label: "Italiano 1 (ES → IT)",
+    dot: "#72243E",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#72243E"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"de hecho.", a:"Infatti"},
+      {cat:"italiano", q:"puesto que, ya que (=in quanto).", a:"Poiché. Ej: \"È vero, poiché è stato provato in tribunale.\""},
+      {cat:"italiano", q:"solicitar, volver a pedir.", a:"Richiedere"},
+      {cat:"italiano", q:"Me dijo que vendría a buscarme.", a:"Tu respuesta: «Mi ha detto che verrebbe a cercarmi» — incorrecta.<br>Correcto: «Mi ha detto che <strong>sarebbe venuto</strong> a cercarmi».<br>Explicación: comunicación (dire) + futuro nel passato → condizionale passato."},
+      {cat:"italiano", q:"aún, aún cuando.", a:"Pur. Ej: Siempre pur + gerundio en esta acepción."},
+      {cat:"italiano", q:"imprevisible.", a:"Imprevedibile"},
+      {cat:"italiano", q:"yo me ocupo.", a:"Ci penso io"},
+      {cat:"italiano", q:"en el sentido de ¿cierto?", a:"Giusto?"},
+      {cat:"italiano", q:"sino (=ma).", a:"Bensì. Ej: \"Lavorare qua non è lavoro bensì piacere.\" Con anziché sería: \"Lavorare qua é un piacere anziché un lavoro.\""},
+      {cat:"italiano", q:"incluso, inclusive (=persino, perfino, anche).", a:"Addirittura. Ej: \"Mi piace il cannabis, alcuni dicono addirittura che abbia proprietà magiche.\""},
+      {cat:"italiano", q:"excepto, salvo.", a:"Tranne. Ej: Tranne che: a menos que, a no ser que."},
+      {cat:"italiano", q:"en otro lugar.", a:"Altrove. Ej: \"Nel libro non c'erano le informazioni che cercava la studentessa, così dovette cercare altrove.\""},
+      {cat:"italiano", q:"Nos prometieron que terminarían la obra antes del verano.", a:"Tu respuesta: «Ci hanno promesso che finirebbero la opera prima di estate» — incorrecta.<br>Correcto: «Ci hanno promesso che <strong>avrebbero finito</strong> la opera prima di estate».<br>Explicación: promesa (comunicación) + futuro → condizionale passato, no presente."},
+      {cat:"italiano", q:"cada uno (=ognuno).", a:"Ciascun/ciascuno"},
+      {cat:"italiano", q:"paso a paso, de a poco, gradualmente.", a:"Man mano"},
+      {cat:"italiano", q:"antes, en el pasado, hace tiempo.", a:"Una volta"},
+      {cat:"italiano", q:"más, después de un verbo.", a:"Di più. Ej: \"Devi studiare di più\". Pero \"in più\" es de más/extra: \"Ho comprato un biglietto in più\"."},
+      {cat:"italiano", q:"1) ya. 2) a esta hora, a esta altura.", a:"Ormai/Oramai. Ej: \"Ormai i miei ospiti avrebbero dovuto essere già qui. La cena si fredda.\""},
+      {cat:"italiano", q:"en cuanto, ni bien.", a:"Non appena. Ej: \"Ti richiamo non appena abbiamo novità.\""}
+    ]
+  },
+  italiano2_it: {
+    label: "Italiano 2 (IT → ES)",
+    dot: "#8A3B5A",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#8A3B5A"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"Altrui", a:"de los demás. Ej: \"Io non ho finito l'università e non occupo il posto altrui.\""},
+      {cat:"italiano", q:"Altrettanto", a:"lo mismo / igualmente. Ej: \"Non posso dire altrettanto di te.\" / \"Spingersi più lontano sarebbe altrettanto irresponsabile.\" / \"Tanti auguri! — Grazie, altrettanto!\""},
+      {cat:"italiano", q:"Talvolta", a:"a veces."},
+      {cat:"italiano", q:"Anziché", a:"sino (=bensì). Ej: \"Lavorare qua é un piacere anziché un lavoro.\""},
+      {cat:"italiano", q:"C'erano tante macchine", a:"Forma correcta de decir «había muchos autos». No se dice «c'e l'aveva» para «había»."},
+      {cat:"italiano", q:"Usura", a:"deterioro."},
+      {cat:"italiano", q:"Aggiuntivo", a:"adicional. Ej: \"Pagare un prezzo aggiuntivo.\""},
+      {cat:"italiano", q:"Sabía que ella ya se había ido.", a:"Tu respuesta: «Sapevo che lei si era già andata» — incorrecta.<br>Correcto: «Sapevo che lei <strong>se n'era</strong> già andata».<br>Explicación: «irse» es andarsene; «si era andata» sola no existe."},
+      {cat:"italiano", q:"A seconda di", a:"dependiendo de. Ej: \"A seconda del tempo, andremo al mare o al museo.\""},
+      {cat:"italiano", q:"Pari", a:"igual. Ej: \"Un guadagno che è pari al 5% del tuo è preferibile a niente.\""},
+      {cat:"italiano", q:"In quanto", a:"puesto que, ya que (=poiché). Ej: \"È vero, in quanto è stato provato in tribunale.\""},
+      {cat:"italiano", q:"Togliere", a:"quitar, sacar."},
+      {cat:"italiano", q:"Non c'era / non c'erano", a:"no había."},
+      {cat:"italiano", q:"Esperaba que todo saliera bien.", a:"Tu respuesta: «Speravo che tutto fossi bene» — incorrecta.<br>Correcto: «Speravo che tutto <strong>andasse</strong> bene»."},
+      {cat:"italiano", q:"Riassumere", a:"resumir; también retomar, recuperar."},
+      {cat:"italiano", q:"Tutt'altro che", a:"todo excepto, estar lejos de (en sentido fig.). Ej: \"Questa relazione è tutt'altro che equilibrata.\" / \"È stata una buona giornata, ma è tutt'altro che finita.\""},
+      {cat:"italiano", q:"Habría preferido que estuvieras conmigo esa noche.", a:"Tu respuesta: «Avrei preferito che fossi stato con me quella notte» — incorrecta.<br>Correcto: «Avrei preferito che tu <strong>fossi</strong> con me quella notte».<br>Explicación: el estar conmigo es simultáneo a la preferencia, no anterior → imperfetto, no trapassato."},
+      {cat:"italiano", q:"Farcela", a:"ser capaz, lograrlo."},
+      {cat:"italiano", q:"Figurati", a:"de nada / no te preocupes / ¡ni loco! Depende del contexto: \"Grazie!\" — \"Figurati!\"; o \"Lui che cucina? Figurati!\""}
+    ]
+  },
+  italiano2_es: {
+    label: "Italiano 2 (ES → IT)",
+    dot: "#8A3B5A",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#8A3B5A"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"de los demás.", a:"Altrui. Ej: \"Io non ho finito l'università e non occupo il posto altrui.\""},
+      {cat:"italiano", q:"lo mismo / igualmente.", a:"Altrettanto. Ej: \"Non posso dire altrettanto di te.\" / \"Spingersi più lontano sarebbe altrettanto irresponsabile.\" / \"Tanti auguri! — Grazie, altrettanto!\""},
+      {cat:"italiano", q:"a veces.", a:"Talvolta"},
+      {cat:"italiano", q:"sino (=bensì).", a:"Anziché. Ej: \"Lavorare qua é un piacere anziché un lavoro.\""},
+      {cat:"italiano", q:"Forma correcta de decir «había muchos autos». No se dice «c'e l'aveva» para «había».", a:"C'erano tante macchine"},
+      {cat:"italiano", q:"deterioro.", a:"Usura"},
+      {cat:"italiano", q:"adicional.", a:"Aggiuntivo. Ej: \"Pagare un prezzo aggiuntivo.\""},
+      {cat:"italiano", q:"Sabía que ella ya se había ido.", a:"Tu respuesta: «Sapevo che lei si era già andata» — incorrecta.<br>Correcto: «Sapevo che lei <strong>se n'era</strong> già andata».<br>Explicación: «irse» es andarsene; «si era andata» sola no existe."},
+      {cat:"italiano", q:"dependiendo de.", a:"A seconda di. Ej: \"A seconda del tempo, andremo al mare o al museo.\""},
+      {cat:"italiano", q:"igual.", a:"Pari. Ej: \"Un guadagno che è pari al 5% del tuo è preferibile a niente.\""},
+      {cat:"italiano", q:"puesto que, ya que (=poiché).", a:"In quanto. Ej: \"È vero, in quanto è stato provato in tribunale.\""},
+      {cat:"italiano", q:"quitar, sacar.", a:"Togliere"},
+      {cat:"italiano", q:"no había.", a:"Non c'era / non c'erano"},
+      {cat:"italiano", q:"Esperaba que todo saliera bien.", a:"Tu respuesta: «Speravo che tutto fossi bene» — incorrecta.<br>Correcto: «Speravo che tutto <strong>andasse</strong> bene»."},
+      {cat:"italiano", q:"resumir; también retomar, recuperar.", a:"Riassumere"},
+      {cat:"italiano", q:"todo excepto, estar lejos de (en sentido fig.).", a:"Tutt'altro che. Ej: \"Questa relazione è tutt'altro che equilibrata.\" / \"È stata una buona giornata, ma è tutt'altro che finita.\""},
+      {cat:"italiano", q:"Habría preferido que estuvieras conmigo esa noche.", a:"Tu respuesta: «Avrei preferito che fossi stato con me quella notte» — incorrecta.<br>Correcto: «Avrei preferito che tu <strong>fossi</strong> con me quella notte».<br>Explicación: el estar conmigo es simultáneo a la preferencia, no anterior → imperfetto, no trapassato."},
+      {cat:"italiano", q:"ser capaz, lograrlo.", a:"Farcela"},
+      {cat:"italiano", q:"de nada / no te preocupes / ¡ni loco!", a:"Figurati. Ej: Depende del contexto: \"Grazie!\" — \"Figurati!\"; o \"Lui che cucina? Figurati!\""}
+    ]
+  },
+  italiano3_it: {
+    label: "Italiano 3 (IT → ES)",
+    dot: "#5A2E6E",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#5A2E6E"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"Mi raccomando", a:"te recomiendo."},
+      {cat:"italiano", q:"Inoltre", a:"además. Ej: \"In quel ristorante, il cibo non è un granché e, inoltre, te lo fanno anche pagare caro.\""},
+      {cat:"italiano", q:"Ritenere", a:"considerar. Ritenere che: creer que."},
+      {cat:"italiano", q:"Creía que la película empezaría más tarde.", a:"Tu respuesta: «Credevo che il film comincerebbe più tardi» — incorrecta.<br>Correcto: «Credevo che il film <strong>cominciasse</strong> più tardi».<br>Explicación: credere = opinión → congiuntivo, descarta el condizionale; posterioridad dentro del congiuntivo → imperfetto."},
+      {cat:"italiano", q:"Avrei voluto che voi ___ con noi quella sera.", a:"Pusiste: «foste restati» — incorrecta.<br>Correcto: «<strong>restaste</strong>».<br>Explicación: el congiuntivo está bien, pero el quedarse es simultáneo al deseo, no anterior → imperfetto, no trapassato."},
+      {cat:"italiano", q:"Pensiero", a:"además de pensamiento, también preocupación o problema."},
+      {cat:"italiano", q:"Affinché", a:"para que, a fin de que. Ej: \"Affinché le vendite siano buone, il nostro dipartimento deve lavorare sodo questo mese.\""},
+      {cat:"italiano", q:"Altroché", a:"sin duda, ¡y cómo! Ej: \"Sì, altroché.\""},
+      {cat:"italiano", q:"Innanzitutto", a:"antes que nada."},
+      {cat:"italiano", q:"Laggiù", a:"ahí abajo, ahí (lejos)."},
+      {cat:"italiano", q:"Bersaglio", a:"blanco (=scopo, fine, obiettivo)."},
+      {cat:"italiano", q:"E via dicendo", a:"etcétera."},
+      {cat:"italiano", q:"Bagnare", a:"mojar."},
+      {cat:"italiano", q:"Pensavo che la riunione ___ più tardi, non così presto.", a:"Pusiste: «sarebbe cominciata» — incorrecta.<br>Correcto: «<strong>cominciasse</strong>».<br>Explicación: pensavo = opinión → congiuntivo, no condizionale; pusiste condizionale passato donde el modo pedía congiuntivo."},
+      {cat:"italiano", q:"Lucchetto", a:"candado."},
+      {cat:"italiano", q:"Appartenere", a:"pertenecer a."},
+      {cat:"italiano", q:"Allegato", a:"adjunto (un archivo)."},
+      {cat:"italiano", q:"Pensaba que llegarías más tarde.", a:"Tu respuesta: «Pensavo che saresti arrivato più tardi» — correcta, pero no la mejor opción.<br>Más correcto: «Pensavo che <strong>arrivassi</strong> più tardi»."},
+      {cat:"italiano", q:"Entrambi/e", a:"ambas (=tutti e due). Ej: \"Lui ha disattivato entrambe le telecamere.\""}
+    ]
+  },
+  italiano3_es: {
+    label: "Italiano 3 (ES → IT)",
+    dot: "#5A2E6E",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#5A2E6E"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"te recomiendo.", a:"Mi raccomando"},
+      {cat:"italiano", q:"además.", a:"Inoltre. Ej: \"In quel ristorante, il cibo non è un granché e, inoltre, te lo fanno anche pagare caro.\""},
+      {cat:"italiano", q:"considerar.", a:"Ritenere. Ej: Ritenere che: creer que."},
+      {cat:"italiano", q:"Creía que la película empezaría más tarde.", a:"Tu respuesta: «Credevo che il film comincerebbe più tardi» — incorrecta.<br>Correcto: «Credevo che il film <strong>cominciasse</strong> più tardi».<br>Explicación: credere = opinión → congiuntivo, descarta el condizionale; posterioridad dentro del congiuntivo → imperfetto."},
+      {cat:"italiano", q:"Avrei voluto che voi ___ con noi quella sera.", a:"Pusiste: «foste restati» — incorrecta.<br>Correcto: «<strong>restaste</strong>».<br>Explicación: el congiuntivo está bien, pero el quedarse es simultáneo al deseo, no anterior → imperfetto, no trapassato."},
+      {cat:"italiano", q:"además de pensamiento, también preocupación o problema.", a:"Pensiero"},
+      {cat:"italiano", q:"para que, a fin de que.", a:"Affinché. Ej: \"Affinché le vendite siano buone, il nostro dipartimento deve lavorare sodo questo mese.\""},
+      {cat:"italiano", q:"sin duda, ¡y cómo!", a:"Altroché. Ej: \"Sì, altroché.\""},
+      {cat:"italiano", q:"antes que nada.", a:"Innanzitutto"},
+      {cat:"italiano", q:"ahí abajo, ahí (lejos).", a:"Laggiù"},
+      {cat:"italiano", q:"blanco (=scopo, fine, obiettivo).", a:"Bersaglio"},
+      {cat:"italiano", q:"etcétera.", a:"E via dicendo"},
+      {cat:"italiano", q:"mojar.", a:"Bagnare"},
+      {cat:"italiano", q:"Pensavo che la riunione ___ più tardi, non così presto.", a:"Pusiste: «sarebbe cominciata» — incorrecta.<br>Correcto: «<strong>cominciasse</strong>».<br>Explicación: pensavo = opinión → congiuntivo, no condizionale; pusiste condizionale passato donde el modo pedía congiuntivo."},
+      {cat:"italiano", q:"candado.", a:"Lucchetto"},
+      {cat:"italiano", q:"pertenecer a.", a:"Appartenere"},
+      {cat:"italiano", q:"adjunto (un archivo).", a:"Allegato"},
+      {cat:"italiano", q:"Pensaba que llegarías más tarde.", a:"Tu respuesta: «Pensavo che saresti arrivato più tardi» — correcta, pero no la mejor opción.<br>Más correcto: «Pensavo che <strong>arrivassi</strong> più tardi»."},
+      {cat:"italiano", q:"ambas (=tutti e due).", a:"Entrambi/e. Ej: \"Lui ha disattivato entrambe le telecamere.\""}
+    ]
+  },
+  italiano4_it: {
+    label: "Italiano 4 (IT → ES)",
+    dot: "#3E5A8A",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#3E5A8A"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"Me prometió que me llamaría al llegar.", a:"Tu respuesta: «Mi promise che mi chiamasse al arrivare» — incorrecta.<br>Correcto: «Mi promise che mi <strong>avrebbe chiamato appena arrivato</strong>».<br>Explicación: prometer no lleva congiuntivo, se usa condizionale (aquí passato); «al arrivare» no existe, es «appena arrivato»."},
+      {cat:"italiano", q:"Contadino", a:"labrador."},
+      {cat:"italiano", q:"Estaba seguro de que ella habría aceptado.", a:"Tu respuesta: «Ero sicuro che ella aveva accettato» — incorrecta.<br>Correcto: «Ero sicuro che lei <strong>avrebbe accettato</strong>»."},
+      {cat:"italiano", q:"Perciò", a:"por lo tanto, por consiguiente, por eso. Ej: \"La polizia non ha trovato prove che fu lui a commettere l'omicidio, perciò non fu arrestato.\" / \"Penso, perciò sono.\""},
+      {cat:"italiano", q:"Avrei voluto che tu me l'___ prima, non a cose fatte.", a:"Pusiste: «avessi detto» — correcta.<br>Explicación: acá el decir es anterior a la preferencia → trapassato."},
+      {cat:"italiano", q:"Ci mancherebbe", a:"faltaría más, no hay de qué."},
+      {cat:"italiano", q:"Di fila", a:"seguido. Ej: \"Terzo mondiale di fila senza azzurra.\""},
+      {cat:"italiano", q:"Cosicché", a:"así que, de manera que / para que. Ej: \"Deve avvicinarsi cosicché lui possa ascoltare bene.\" / \"Io studio economia, cosicché sono in effetti un economista.\""},
+      {cat:"italiano", q:"Avrei preferito che tu me lo ___ di persona, guardandomi in faccia.", a:"Pusiste: «avessi detto» — incorrecta.<br>Correcto: «<strong>dicessi</strong>».<br>Explicación: el decírtelo es simultáneo a la preferencia → imperfetto, no trapassato."},
+      {cat:"italiano", q:"Ovvero", a:"mejor dicho, o sea, es decir."},
+      {cat:"italiano", q:"Finché", a:"1) mientras. Ej: \"Finché vivi sotto il mio tetto, obbedirai alle mie regole.\" 2) hasta. Ej: \"La polizia non verrà finché le condizioni meteo non miglioreranno.\""},
+      {cat:"italiano", q:"Comunque", a:"todas las acepciones (de todos modos, en fin, igualmente)."},
+      {cat:"italiano", q:"Estaba seguro de que ellos ganarían el partido.", a:"Tu respuesta: «Ero sicuro che loro vincerebbero la partita» — incorrecta.<br>Correcto: «Ero sicuro che loro <strong>avrebbero vinto</strong>».<br>Explicación: «vincerebbero» es calco del español; certeza + futuro nel passato → condizionale passato."},
+      {cat:"italiano", q:"Sfumatura", a:"matiz (también en sentido figurado)."},
+      {cat:"italiano", q:"Tra l'altro", a:"entre otras cosas."},
+      {cat:"italiano", q:"Ravvicinare", a:"acercar."},
+      {cat:"italiano", q:"Altrettanto", a:"lo mismo / igualmente. Ej: \"Non posso dire altrettanto di te.\" / \"Spingersi più lontano sarebbe altrettanto irresponsabile.\" / \"Tanti auguri! — Grazie, altrettanto!\""},
+      {cat:"italiano", q:"Guarire", a:"sanar, curar."}
+    ]
+  },
+  italiano4_es: {
+    label: "Italiano 4 (ES → IT)",
+    dot: "#3E5A8A",
+    type: "qa",
+    tagColor: {bg:"#F8E1EB", text:"#3E5A8A"},
+    catColors: null,
+    cards: [
+      {cat:"italiano", q:"Me prometió que me llamaría al llegar.", a:"Tu respuesta: «Mi promise che mi chiamasse al arrivare» — incorrecta.<br>Correcto: «Mi promise che mi <strong>avrebbe chiamato appena arrivato</strong>».<br>Explicación: prometer no lleva congiuntivo, se usa condizionale (aquí passato); «al arrivare» no existe, es «appena arrivato»."},
+      {cat:"italiano", q:"labrador.", a:"Contadino"},
+      {cat:"italiano", q:"Estaba seguro de que ella habría aceptado.", a:"Tu respuesta: «Ero sicuro che ella aveva accettato» — incorrecta.<br>Correcto: «Ero sicuro che lei <strong>avrebbe accettato</strong>»."},
+      {cat:"italiano", q:"por lo tanto, por consiguiente, por eso.", a:"Perciò. Ej: \"La polizia non ha trovato prove che fu lui a commettere l'omicidio, perciò non fu arrestato.\" / \"Penso, perciò sono.\""},
+      {cat:"italiano", q:"Avrei voluto che tu me l'___ prima, non a cose fatte.", a:"Pusiste: «avessi detto» — correcta.<br>Explicación: acá el decir es anterior a la preferencia → trapassato."},
+      {cat:"italiano", q:"faltaría más, no hay de qué.", a:"Ci mancherebbe"},
+      {cat:"italiano", q:"seguido.", a:"Di fila. Ej: \"Terzo mondiale di fila senza azzurra.\""},
+      {cat:"italiano", q:"así que, de manera que / para que.", a:"Cosicché. Ej: \"Deve avvicinarsi cosicché lui possa ascoltare bene.\" / \"Io studio economia, cosicché sono in effetti un economista.\""},
+      {cat:"italiano", q:"Avrei preferito che tu me lo ___ di persona, guardandomi in faccia.", a:"Pusiste: «avessi detto» — incorrecta.<br>Correcto: «<strong>dicessi</strong>».<br>Explicación: el decírtelo es simultáneo a la preferencia → imperfetto, no trapassato."},
+      {cat:"italiano", q:"mejor dicho, o sea, es decir.", a:"Ovvero"},
+      {cat:"italiano", q:"1) mientras.", a:"Finché. Ej: \"Finché vivi sotto il mio tetto, obbedirai alle mie regole.\" 2) hasta. Ej: \"La polizia non verrà finché le condizioni meteo non miglioreranno.\""},
+      {cat:"italiano", q:"todas las acepciones (de todos modos, en fin, igualmente).", a:"Comunque"},
+      {cat:"italiano", q:"Estaba seguro de que ellos ganarían el partido.", a:"Tu respuesta: «Ero sicuro che loro vincerebbero la partita» — incorrecta.<br>Correcto: «Ero sicuro che loro <strong>avrebbero vinto</strong>».<br>Explicación: «vincerebbero» es calco del español; certeza + futuro nel passato → condizionale passato."},
+      {cat:"italiano", q:"matiz (también en sentido figurado).", a:"Sfumatura"},
+      {cat:"italiano", q:"entre otras cosas.", a:"Tra l'altro"},
+      {cat:"italiano", q:"acercar.", a:"Ravvicinare"},
+      {cat:"italiano", q:"lo mismo / igualmente.", a:"Altrettanto. Ej: \"Non posso dire altrettanto di te.\" / \"Spingersi più lontano sarebbe altrettanto irresponsabile.\" / \"Tanti auguri! — Grazie, altrettanto!\""},
+      {cat:"italiano", q:"sanar, curar.", a:"Guarire"}
+    ]
+  },
+  ingles1_en: {
+    label: "Inglés 1 (EN → ES)",
+    dot: "#0B4A3F",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#0B4A3F"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"To jack up sth", a:"aumentar, subir con fuerza (slang, para precios, tasas, etc). Ej: to jack up my growth potential / to jack up the rate of engagement."},
+      {cat:"ingles", q:"A hunch", a:"una corazonada, intuición. Ej: I have a hunch that…"},
+      {cat:"ingles", q:"Remit", a:"área de autoridad, jurisdicción."},
+      {cat:"ingles", q:"A show of hands", a:"levantar la mano para indicar que uno quiere algo, está de acuerdo, etc. Ej: Parliamentary leaders agreed to take all such decisions by a show of hands."},
+      {cat:"ingles", q:"Entrepreneur", a:"se pronuncia \"antreprenúer\"."},
+      {cat:"ingles", q:"To put one's two cents (in)", a:"dar una humilde opinión, poner el granito de arena. Ej: I don't agree with what's happening. That's just my two cents. / You didn't ask for my two cents but I'll tell you anyway."},
+      {cat:"ingles", q:"Grievance", a:"motivo de queja."},
+      {cat:"ingles", q:"Horsefly", a:"tábano."},
+      {cat:"ingles", q:"To amend", a:"cambiar, modificar, enmendar."},
+      {cat:"ingles", q:"To spot", a:"detectar, divisar."},
+      {cat:"ingles", q:"Arrange for (the dinner)", a:"Organizar, coordinar (la cena)."},
+      {cat:"ingles", q:"Copycat", a:"una copia."},
+      {cat:"ingles", q:"When the chips are down", a:"en el momento crítico, cuando las cosas se ponen difíciles."},
+      {cat:"ingles", q:"Compelling", a:"convincente. Ej: Compelling evidence / Compelling argument."},
+      {cat:"ingles", q:"Put me down for sth", a:"anotame."},
+      {cat:"ingles", q:"Rebate", a:"reembolso, devolución."},
+      {cat:"ingles", q:"What's the downside?", a:"el lado negativo, la desventaja."},
+      {cat:"ingles", q:"Forthcoming", a:"siguiente, venidero, disponible. Ej: Kyle went to buy some supplies for the forthcoming events. / Since state educational funding wasn't forthcoming, students had to find other ways to pay for university."},
+      {cat:"ingles", q:"Bankable", a:"rentable."},
+      {cat:"ingles", q:"To stack the deck (against sbd/sth)", a:"jugar en contra de algo/alguien. The deck is stacked against smn: las cosas están en contra de alguien."},
+      {cat:"ingles", q:"Swathe (sueiz)", a:"tira, franja."},
+      {cat:"ingles", q:"To get hung up on something", a:"preocuparse excesiva o irracionalmente por algo, quedarse pegado. Ej: I don't wanna get too hung up on this but… / Don't get hung up on the small details; we need to focus on the big picture."},
+      {cat:"ingles", q:"With regard(s) to", a:"con respecto a."},
+      {cat:"ingles", q:"Relentless", a:"incansable, incesante."},
+      {cat:"ingles", q:"Let bygones be bygones", a:"dejar atrás el pasado, hacer borrón y cuenta nueva."},
+      {cat:"ingles", q:"Clearance", a:"autorización, permiso, acceso."},
+      {cat:"ingles", q:"To get the edge", a:"sacar ventaja (en una negociación)."},
+      {cat:"ingles", q:"Getting around something", a:"sortear, evitar."},
+      {cat:"ingles", q:"For that matter", a:"si vamos al caso. Ej: I know she doesn't like his music — for that matter, neither do I. / The only guarantee that Bosnia or Kosovo, or the entire Balkans for that matter, will not go up in flames again tomorrow."},
+      {cat:"ingles", q:"Dairy (deri)", a:"lácteo."},
+      {cat:"ingles", q:"To daunt", a:"intimidar, atemorizar. Daunting: abrumador, intimidante, desalentador."},
+      {cat:"ingles", q:"Doggedly", a:"empecinadamente, insistentemente, tercamente."},
+      {cat:"ingles", q:"To churn out", a:"producir en masa. Ej: Argentina still churns out plenty of characterless bottles."},
+      {cat:"ingles", q:"Out of thin air", a:"de golpe, de la nada."},
+      {cat:"ingles", q:"Dire straits", a:"en apuros, en aprietos. Ej: …the economy is still in dire straits."},
+      {cat:"ingles", q:"To appraise", a:"valorar, juzgar."},
+      {cat:"ingles", q:"Fluff", a:"pelusa / algo sin valor, que sobra."},
+      {cat:"ingles", q:"Down the line", a:"más adelante, a futuro."},
+      {cat:"ingles", q:"Top notch", a:"de primera calidad."},
+      {cat:"ingles", q:"Due diligence", a:"las comprobaciones debidas. Chequeo de información sobre una persona, empresa o negocio, previo a firmar un contrato."},
+      {cat:"ingles", q:"Beat a dead horse", a:"gastar energía en algo que no tiene sentido."},
+      {cat:"ingles", q:"To face sb/sth down", a:"enfrentarlo, encararlo."}
+    ]
+  },
+  ingles1_es: {
+    label: "Inglés 1 (ES → EN)",
+    dot: "#0B4A3F",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#0B4A3F"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"aumentar, subir con fuerza (slang, para precios, tasas, etc).", a:"To jack up sth. Ej: to jack up my growth potential / to jack up the rate of engagement."},
+      {cat:"ingles", q:"una corazonada, intuición.", a:"A hunch. Ej: I have a hunch that…"},
+      {cat:"ingles", q:"área de autoridad, jurisdicción.", a:"Remit"},
+      {cat:"ingles", q:"levantar la mano para indicar que uno quiere algo, está de acuerdo, etc.", a:"A show of hands. Ej: Parliamentary leaders agreed to take all such decisions by a show of hands."},
+      {cat:"ingles", q:"se pronuncia \"antreprenúer\".", a:"Entrepreneur"},
+      {cat:"ingles", q:"dar una humilde opinión, poner el granito de arena.", a:"To put one's two cents (in). Ej: I don't agree with what's happening. That's just my two cents. / You didn't ask for my two cents but I'll tell you anyway."},
+      {cat:"ingles", q:"motivo de queja.", a:"Grievance"},
+      {cat:"ingles", q:"tábano.", a:"Horsefly"},
+      {cat:"ingles", q:"cambiar, modificar, enmendar.", a:"To amend"},
+      {cat:"ingles", q:"detectar, divisar.", a:"To spot"},
+      {cat:"ingles", q:"Organizar, coordinar (la cena).", a:"Arrange for (the dinner)"},
+      {cat:"ingles", q:"una copia.", a:"Copycat"},
+      {cat:"ingles", q:"en el momento crítico, cuando las cosas se ponen difíciles.", a:"When the chips are down"},
+      {cat:"ingles", q:"convincente.", a:"Compelling. Ej: Compelling evidence / Compelling argument."},
+      {cat:"ingles", q:"anotame.", a:"Put me down for sth"},
+      {cat:"ingles", q:"reembolso, devolución.", a:"Rebate"},
+      {cat:"ingles", q:"el lado negativo, la desventaja.", a:"What's the downside?"},
+      {cat:"ingles", q:"siguiente, venidero, disponible.", a:"Forthcoming. Ej: Kyle went to buy some supplies for the forthcoming events. / Since state educational funding wasn't forthcoming, students had to find other ways to pay for university."},
+      {cat:"ingles", q:"rentable.", a:"Bankable"},
+      {cat:"ingles", q:"jugar en contra de algo/alguien. The deck is stacked against smn: las cosas están en contra de alguien.", a:"To stack the deck (against sbd/sth)"},
+      {cat:"ingles", q:"tira, franja.", a:"Swathe (sueiz)"},
+      {cat:"ingles", q:"preocuparse excesiva o irracionalmente por algo, quedarse pegado.", a:"To get hung up on something. Ej: I don't wanna get too hung up on this but… / Don't get hung up on the small details; we need to focus on the big picture."},
+      {cat:"ingles", q:"con respecto a.", a:"With regard(s) to"},
+      {cat:"ingles", q:"incansable, incesante.", a:"Relentless"},
+      {cat:"ingles", q:"dejar atrás el pasado, hacer borrón y cuenta nueva.", a:"Let bygones be bygones"},
+      {cat:"ingles", q:"autorización, permiso, acceso.", a:"Clearance"},
+      {cat:"ingles", q:"sacar ventaja (en una negociación).", a:"To get the edge"},
+      {cat:"ingles", q:"sortear, evitar.", a:"Getting around something"},
+      {cat:"ingles", q:"si vamos al caso.", a:"For that matter. Ej: I know she doesn't like his music — for that matter, neither do I. / The only guarantee that Bosnia or Kosovo, or the entire Balkans for that matter, will not go up in flames again tomorrow."},
+      {cat:"ingles", q:"lácteo.", a:"Dairy (deri)"},
+      {cat:"ingles", q:"intimidar, atemorizar.", a:"To daunt. Ej: Daunting: abrumador, intimidante, desalentador."},
+      {cat:"ingles", q:"empecinadamente, insistentemente, tercamente.", a:"Doggedly"},
+      {cat:"ingles", q:"producir en masa.", a:"To churn out. Ej: Argentina still churns out plenty of characterless bottles."},
+      {cat:"ingles", q:"de golpe, de la nada.", a:"Out of thin air"},
+      {cat:"ingles", q:"en apuros, en aprietos.", a:"Dire straits. Ej: …the economy is still in dire straits."},
+      {cat:"ingles", q:"valorar, juzgar.", a:"To appraise"},
+      {cat:"ingles", q:"pelusa / algo sin valor, que sobra.", a:"Fluff"},
+      {cat:"ingles", q:"más adelante, a futuro.", a:"Down the line"},
+      {cat:"ingles", q:"de primera calidad.", a:"Top notch"},
+      {cat:"ingles", q:"las comprobaciones debidas. Chequeo de información sobre una persona, empresa o negocio, previo a firmar un contrato.", a:"Due diligence"},
+      {cat:"ingles", q:"gastar energía en algo que no tiene sentido.", a:"Beat a dead horse"},
+      {cat:"ingles", q:"enfrentarlo, encararlo.", a:"To face sb/sth down"}
+    ]
+  },
+  ingles2_en: {
+    label: "Inglés 2 (EN → ES)",
+    dot: "#0C447C",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#0C447C"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"Give sth a whirl", a:"probar, intentar. (Give it a whirl!)"},
+      {cat:"ingles", q:"Bespoke", a:"a medida (como sustantivo). Ej: Bespoke solutions."},
+      {cat:"ingles", q:"Ubiquitous (iubíkueres)", a:"extendido (widespread)."},
+      {cat:"ingles", q:"Bill", a:"facturar."},
+      {cat:"ingles", q:"All the more reason", a:"con más razón."},
+      {cat:"ingles", q:"On the dot", a:"exacto, en punto (hora)."},
+      {cat:"ingles", q:"A fallback", a:"plan B, último recurso."},
+      {cat:"ingles", q:"Building block", a:"Pieza fundamental, bloque constructivo (de algo más grande)."},
+      {cat:"ingles", q:"As of today", a:"hasta ahora (ojo, contraintuitivo respecto a \"as of now\")."},
+      {cat:"ingles", q:"MLA", a:"master level agreement."},
+      {cat:"ingles", q:"Derail", a:"Descarrilar; hacer fracasar o desviar algo de su curso."},
+      {cat:"ingles", q:"Airtight", a:"hermético, impenetrable, irrefutable, seguro, perfecto."},
+      {cat:"ingles", q:"To own up to sth", a:"admitir, reconocer."},
+      {cat:"ingles", q:"Hands-on", a:"práctico, activo."},
+      {cat:"ingles", q:"With a view to", a:"con el objetivo de."},
+      {cat:"ingles", q:"Bootstrapping", a:"empezar algo sin recursos o con muy pocos recursos."},
+      {cat:"ingles", q:"To jump in", a:"meterse de lleno."},
+      {cat:"ingles", q:"Underhand", a:"de forma poco honesta."},
+      {cat:"ingles", q:"To kneel (nil)", a:"arrodillarse (no es \"to knee\")."},
+      {cat:"ingles", q:"To ponder / to ponder over sth", a:"reflexionar sobre algo."},
+      {cat:"ingles", q:"Soothing", a:"reconfortante, relajante."},
+      {cat:"ingles", q:"To keep tabs on sb/sth", a:"controlar, vigilar, chequear."},
+      {cat:"ingles", q:"Wary", a:"receloso, precavido."},
+      {cat:"ingles", q:"To cap", a:"limitar."},
+      {cat:"ingles", q:"Chances are that…", a:"lo más probable es que…"},
+      {cat:"ingles", q:"Not for the faint of heart", a:"no apto para cagones."},
+      {cat:"ingles", q:"Skim through", a:"ojear."},
+      {cat:"ingles", q:"To falter", a:"tambalearse, flaquear."},
+      {cat:"ingles", q:"To be at odds with", a:"estar en desacuerdo con."},
+      {cat:"ingles", q:"I'm all set", a:"estoy listo."},
+      {cat:"ingles", q:"A head start", a:"ventaja."},
+      {cat:"ingles", q:"To dodge", a:"evitar, esquivar (físicamente)."},
+      {cat:"ingles", q:"Whirl", a:"girar, rodar."},
+      {cat:"ingles", q:"Upfront", a:"de antemano, por adelantado (se usa para pagos). To pay sth upfront. Distinto de beforehand, que es de antemano pero para otras cosas: to know sth beforehand."},
+      {cat:"ingles", q:"By the same token", a:"del mismo modo, de la misma manera."},
+      {cat:"ingles", q:"Squander", a:"despilfarrar, derrochar."},
+      {cat:"ingles", q:"Dead on", a:"exactamente correcto. Ej: His analysis was dead on."},
+      {cat:"ingles", q:"Overturn", a:"anular, revertir."},
+      {cat:"ingles", q:"To beget", a:"engendrar, dar lugar a (formal)."},
+      {cat:"ingles", q:"Gatekeeper", a:"portero, conserje (=doorman)."},
+      {cat:"ingles", q:"No regret move", a:"Una decisión de la que no te vas a arrepentir."},
+      {cat:"ingles", q:"Rule of thumb", a:"regla general."}
+    ]
+  },
+  ingles2_es: {
+    label: "Inglés 2 (ES → EN)",
+    dot: "#0C447C",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#0C447C"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"probar, intentar. (Give it a whirl!)", a:"Give sth a whirl"},
+      {cat:"ingles", q:"a medida (como sustantivo).", a:"Bespoke. Ej: Bespoke solutions."},
+      {cat:"ingles", q:"extendido (widespread).", a:"Ubiquitous (iubíkueres)"},
+      {cat:"ingles", q:"facturar.", a:"Bill"},
+      {cat:"ingles", q:"con más razón.", a:"All the more reason"},
+      {cat:"ingles", q:"exacto, en punto (hora).", a:"On the dot"},
+      {cat:"ingles", q:"plan B, último recurso.", a:"A fallback"},
+      {cat:"ingles", q:"Pieza fundamental, bloque constructivo (de algo más grande).", a:"Building block"},
+      {cat:"ingles", q:"hasta ahora (ojo, contraintuitivo respecto a \"as of now\").", a:"As of today"},
+      {cat:"ingles", q:"master level agreement.", a:"MLA"},
+      {cat:"ingles", q:"Descarrilar; hacer fracasar o desviar algo de su curso.", a:"Derail"},
+      {cat:"ingles", q:"hermético, impenetrable, irrefutable, seguro, perfecto.", a:"Airtight"},
+      {cat:"ingles", q:"admitir, reconocer.", a:"To own up to sth"},
+      {cat:"ingles", q:"práctico, activo.", a:"Hands-on"},
+      {cat:"ingles", q:"con el objetivo de.", a:"With a view to"},
+      {cat:"ingles", q:"empezar algo sin recursos o con muy pocos recursos.", a:"Bootstrapping"},
+      {cat:"ingles", q:"meterse de lleno.", a:"To jump in"},
+      {cat:"ingles", q:"de forma poco honesta.", a:"Underhand"},
+      {cat:"ingles", q:"arrodillarse (no es \"to knee\").", a:"To kneel (nil)"},
+      {cat:"ingles", q:"reflexionar sobre algo.", a:"To ponder / to ponder over sth"},
+      {cat:"ingles", q:"reconfortante, relajante.", a:"Soothing"},
+      {cat:"ingles", q:"controlar, vigilar, chequear.", a:"To keep tabs on sb/sth"},
+      {cat:"ingles", q:"receloso, precavido.", a:"Wary"},
+      {cat:"ingles", q:"limitar.", a:"To cap"},
+      {cat:"ingles", q:"lo más probable es que…", a:"Chances are that…"},
+      {cat:"ingles", q:"no apto para cagones.", a:"Not for the faint of heart"},
+      {cat:"ingles", q:"ojear.", a:"Skim through"},
+      {cat:"ingles", q:"tambalearse, flaquear.", a:"To falter"},
+      {cat:"ingles", q:"estar en desacuerdo con.", a:"To be at odds with"},
+      {cat:"ingles", q:"estoy listo.", a:"I'm all set"},
+      {cat:"ingles", q:"ventaja.", a:"A head start"},
+      {cat:"ingles", q:"evitar, esquivar (físicamente).", a:"To dodge"},
+      {cat:"ingles", q:"girar, rodar.", a:"Whirl"},
+      {cat:"ingles", q:"de antemano, por adelantado (se usa para pagos).", a:"Upfront. Ej: To pay sth upfront. Distinto de beforehand, que es de antemano pero para otras cosas: to know sth beforehand."},
+      {cat:"ingles", q:"del mismo modo, de la misma manera.", a:"By the same token"},
+      {cat:"ingles", q:"despilfarrar, derrochar.", a:"Squander"},
+      {cat:"ingles", q:"exactamente correcto.", a:"Dead on. Ej: His analysis was dead on."},
+      {cat:"ingles", q:"anular, revertir.", a:"Overturn"},
+      {cat:"ingles", q:"engendrar, dar lugar a (formal).", a:"To beget"},
+      {cat:"ingles", q:"portero, conserje (=doorman).", a:"Gatekeeper"},
+      {cat:"ingles", q:"Una decisión de la que no te vas a arrepentir.", a:"No regret move"},
+      {cat:"ingles", q:"regla general.", a:"Rule of thumb"}
+    ]
+  },
+  ingles3_en: {
+    label: "Inglés 3 (EN → ES)",
+    dot: "#7A3B12",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#7A3B12"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"I'm ready if you are", a:"Estoy listo si vos también."},
+      {cat:"ingles", q:"A rainmaker", a:"persona que genera negocios."},
+      {cat:"ingles", q:"Reckless", a:"imprudente. Actuar sin considerar el riesgo."},
+      {cat:"ingles", q:"It stands to reason", a:"es algo lógico, parece lógico."},
+      {cat:"ingles", q:"Deranged", a:"demente, trastornado."},
+      {cat:"ingles", q:"To delve into sth", a:"escarbar, hurgar."},
+      {cat:"ingles", q:"Ancillary", a:"secundario (no esencial), complementario."},
+      {cat:"ingles", q:"To dispel", a:"disipar. Ej: to dispel the naysayers."},
+      {cat:"ingles", q:"-ish", a:"Alrededor de, aprox, más o menos. Se usa pegado a una palabra (sevenish, cerca de las 7) o suelto: We can meet at seven…ish."},
+      {cat:"ingles", q:"Awkward", a:"complicado, difícil / torpe (=clumsy) / incómodo / inoportuno."},
+      {cat:"ingles", q:"Box office", a:"la boletería."},
+      {cat:"ingles", q:"Pitfall", a:"dificultad, obstáculo."},
+      {cat:"ingles", q:"Knockoff", a:"imitación (marca no original)."},
+      {cat:"ingles", q:"Milestone", a:"hito."},
+      {cat:"ingles", q:"Peacock", a:"pavo real."},
+      {cat:"ingles", q:"To pinpoint", a:"detallar, precisar / ubicar, localizar."},
+      {cat:"ingles", q:"Attrition rate", a:"tasa/índice de abandono."},
+      {cat:"ingles", q:"Tug of war", a:"tira y afloja."},
+      {cat:"ingles", q:"To stem from", a:"Derivar de, originarse en, tener su raíz en algo."},
+      {cat:"ingles", q:"Sloppy", a:"descuidado (un trabajo o una persona hecha de forma descuidada, desprolija, con errores)."},
+      {cat:"ingles", q:"Chasm (kásm)", a:"abismo."},
+      {cat:"ingles", q:"Restless", a:"inquieto, impaciente, preocupado."},
+      {cat:"ingles", q:"To drift", a:"ir a la deriva."},
+      {cat:"ingles", q:"To dive in", a:"zambullirse en algo, meterse de lleno."},
+      {cat:"ingles", q:"Echelon", a:"escalón, nivel, grado. Ej: The upper echelons within the government are..."},
+      {cat:"ingles", q:"Chant / to chant", a:"coro, cántico / corear."},
+      {cat:"ingles", q:"To break ground on sth", a:"ser pionero en algo."},
+      {cat:"ingles", q:"To think on the spot / think on your feet", a:"pensar sobre la marcha."},
+      {cat:"ingles", q:"Tech savvy (savi)", a:"experto en tecnología."},
+      {cat:"ingles", q:"Pet theory", a:"teoría personal. Ej: You're so keen to find evidence of your pet theory that you can't just see the truth."},
+      {cat:"ingles", q:"Something along those lines", a:"algo así."},
+      {cat:"ingles", q:"In exchange for = in return for", a:"a cambio de."},
+      {cat:"ingles", q:"Purview", a:"alcance (scope), término legal (pérviu)."},
+      {cat:"ingles", q:"Foreground", a:"primer plano."},
+      {cat:"ingles", q:"Afar", a:"lejos (ubicación)."},
+      {cat:"ingles", q:"Thereof", a:"del mismo. Ej: I signed a contract and I accepted the clauses thereof."},
+      {cat:"ingles", q:"To tackle sth", a:"abordar, enfrentar, encarar."},
+      {cat:"ingles", q:"Sanguine", a:"optimista, alegre, entusiasta."},
+      {cat:"ingles", q:"For what it's worth", a:"por si sirve de algo, para que conste. Ej: I know you won't change, but for what it's worth, I think that skirt looks awful on you."},
+      {cat:"ingles", q:"Backlash", a:"respuesta negativa, reacción violenta, contragolpe."},
+      {cat:"ingles", q:"To make a case for sth", a:"argumentar a favor de algo, defender una idea. Ej: Luna, you've made a case for recycling in the work place. / We will only publish a new edition if you can make a convincing case for it."}
+    ]
+  },
+  ingles3_es: {
+    label: "Inglés 3 (ES → EN)",
+    dot: "#7A3B12",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#7A3B12"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"Estoy listo si vos también.", a:"I'm ready if you are"},
+      {cat:"ingles", q:"persona que genera negocios.", a:"A rainmaker"},
+      {cat:"ingles", q:"imprudente. Actuar sin considerar el riesgo.", a:"Reckless"},
+      {cat:"ingles", q:"es algo lógico, parece lógico.", a:"It stands to reason"},
+      {cat:"ingles", q:"demente, trastornado.", a:"Deranged"},
+      {cat:"ingles", q:"escarbar, hurgar.", a:"To delve into sth"},
+      {cat:"ingles", q:"secundario (no esencial), complementario.", a:"Ancillary"},
+      {cat:"ingles", q:"disipar.", a:"To dispel. Ej: to dispel the naysayers."},
+      {cat:"ingles", q:"Alrededor de, aproximadamente, más o menos.", a:"-ish. Ej: Se usa pegado a una palabra (sevenish, cerca de las 7) o suelto: We can meet at seven…ish."},
+      {cat:"ingles", q:"complicado, difícil / torpe (=clumsy) / incómodo / inoportuno.", a:"Awkward"},
+      {cat:"ingles", q:"la boletería.", a:"Box office"},
+      {cat:"ingles", q:"dificultad, obstáculo.", a:"Pitfall"},
+      {cat:"ingles", q:"imitación (marca no original).", a:"Knockoff"},
+      {cat:"ingles", q:"hito.", a:"Milestone"},
+      {cat:"ingles", q:"pavo real.", a:"Peacock"},
+      {cat:"ingles", q:"detallar, precisar / ubicar, localizar.", a:"To pinpoint"},
+      {cat:"ingles", q:"tasa/índice de abandono.", a:"Attrition rate"},
+      {cat:"ingles", q:"tira y afloja.", a:"Tug of war"},
+      {cat:"ingles", q:"Derivar de, originarse en, tener su raíz en algo.", a:"To stem from"},
+      {cat:"ingles", q:"descuidado (un trabajo o una persona hecha de forma descuidada, desprolija, con errores).", a:"Sloppy"},
+      {cat:"ingles", q:"abismo.", a:"Chasm (kásm)"},
+      {cat:"ingles", q:"inquieto, impaciente, preocupado.", a:"Restless"},
+      {cat:"ingles", q:"ir a la deriva.", a:"To drift"},
+      {cat:"ingles", q:"zambullirse en algo, meterse de lleno.", a:"To dive in"},
+      {cat:"ingles", q:"escalón, nivel, grado.", a:"Echelon. Ej: The upper echelons within the government are..."},
+      {cat:"ingles", q:"coro, cántico / corear.", a:"Chant / to chant"},
+      {cat:"ingles", q:"ser pionero en algo.", a:"To break ground on sth"},
+      {cat:"ingles", q:"pensar sobre la marcha.", a:"To think on the spot / think on your feet"},
+      {cat:"ingles", q:"experto en tecnología.", a:"Tech savvy (savi)"},
+      {cat:"ingles", q:"teoría personal.", a:"Pet theory. Ej: You're so keen to find evidence of your pet theory that you can't just see the truth."},
+      {cat:"ingles", q:"algo así.", a:"Something along those lines"},
+      {cat:"ingles", q:"a cambio de.", a:"In exchange for = in return for"},
+      {cat:"ingles", q:"alcance (scope), término legal (pérviu).", a:"Purview"},
+      {cat:"ingles", q:"primer plano.", a:"Foreground"},
+      {cat:"ingles", q:"lejos (ubicación).", a:"Afar"},
+      {cat:"ingles", q:"del mismo.", a:"Thereof. Ej: I signed a contract and I accepted the clauses thereof."},
+      {cat:"ingles", q:"abordar, enfrentar, encarar.", a:"To tackle sth"},
+      {cat:"ingles", q:"optimista, alegre, entusiasta.", a:"Sanguine"},
+      {cat:"ingles", q:"por si sirve de algo, para que conste.", a:"For what it's worth. Ej: I know you won't change, but for what it's worth, I think that skirt looks awful on you."},
+      {cat:"ingles", q:"respuesta negativa, reacción violenta, contragolpe.", a:"Backlash"},
+      {cat:"ingles", q:"argumentar a favor de algo, defender una idea.", a:"To make a case for sth. Ej: Luna, you've made a case for recycling in the work place. / We will only publish a new edition if you can make a convincing case for it."}
+    ]
+  },
+  ingles4_en: {
+    label: "Inglés 4 (EN → ES)",
+    dot: "#5A2E7A",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#5A2E7A"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"Course", a:"Curso, rumbo, trayecto. Se pronuncia \"kórs\"."},
+      {cat:"ingles", q:"To brag about sth", a:"alardear, presumir, jactarse de."},
+      {cat:"ingles", q:"The get go", a:"el comienzo de algo."},
+      {cat:"ingles", q:"Cushy", a:"cómodo, confortable."},
+      {cat:"ingles", q:"It figures", a:"ya me lo imaginaba, era obvio. Ej: Walter and Donna got married?? It figures."},
+      {cat:"ingles", q:"A sneak peek", a:"un anticipo, un vistazo."},
+      {cat:"ingles", q:"Day in day out", a:"todos los días."},
+      {cat:"ingles", q:"Turn [sth] around", a:"cambiar algo."},
+      {cat:"ingles", q:"Naysayer", a:"opositor, detractor."},
+      {cat:"ingles", q:"Colleagues", a:"se pronuncia \"kóligs\"."},
+      {cat:"ingles", q:"(A) two-pronged (approach)", a:"de dos puntas. Three-pronged: de 3 puntas."},
+      {cat:"ingles", q:"As of now", a:"desde ahora, a partir de ahora."},
+      {cat:"ingles", q:"Clean slate", a:"borrón y cuenta nueva. Ej: To start with a clean slate."},
+      {cat:"ingles", q:"Monkey business", a:"juego sucio."},
+      {cat:"ingles", q:"Bewildered", a:"desconcertado, desorientado, perplejo."},
+      {cat:"ingles", q:"A foregone conclusion", a:"algo inevitable, cantado, obvio desde el primer momento."},
+      {cat:"ingles", q:"With the naked eye / to the naked eye", a:"sin la ayuda de telescopio, etc."},
+      {cat:"ingles", q:"To stack the odds (in one's favor)", a:"hacer que algo se vuelva a tu favor."},
+      {cat:"ingles", q:"Bare bones", a:"incluye solo lo más básico o necesario. Ej: The free app version is a little bare bones."},
+      {cat:"ingles", q:"To downplay", a:"restar importancia. Ej: The report downplays the seriousness of global warming."},
+      {cat:"ingles", q:"Jot down", a:"anotar."},
+      {cat:"ingles", q:"Convey", a:"expresar, verbalizar, transmitir (kenvéi)."},
+      {cat:"ingles", q:"To pick up", a:"retirar (un ticket comprado por internet, las valijas del avión, etc)."},
+      {cat:"ingles", q:"Sheer", a:"puro, simple, auténtico."},
+      {cat:"ingles", q:"Crank sth up", a:"darle manija, subirlo, meterle. Ej: Crank it up!"},
+      {cat:"ingles", q:"Take one's licks", a:"to be subjected to harsh criticism, to endure criticism. Ej: The movie has taken its licks from the reviewers."},
+      {cat:"ingles", q:"Galore", a:"en abundancia, en cantidad. Ej: Don't worry about finding a place to stay; there are hotels galore in London."},
+      {cat:"ingles", q:"Top-tier (tier)", a:"de primer nivel (=top notch)."},
+      {cat:"ingles", q:"In regard to = regarding = about", a:"Con respecto a, en cuanto a, sobre. (\"In regardS to\", con s, es muy informal e incorrecto)."},
+      {cat:"ingles", q:"Clunky vs Clumsy vs Sloppy", a:"Clunky es para cosas (objetos, sistemas, procesos mal diseñados). Clumsy es para personas (torpeza física o al actuar, movimientos, intentos). Sloppy es para trabajo, escritura o ejecución hecha sin cuidado."},
+      {cat:"ingles", q:"Obnoxious (ebnekshes)", a:"odioso, repulsivo, ofensivo."},
+      {cat:"ingles", q:"To relish", a:"disfrutar mucho."},
+      {cat:"ingles", q:"Deceitful", a:"deshonesto, falso. Ej: It was deceitful to pretend you didn't know about the accident."},
+      {cat:"ingles", q:"Tarnish reputation", a:"manchar la reputación."},
+      {cat:"ingles", q:"If/when push comes to shove", a:"en el peor de los casos (=if the worst comes to the worst)."},
+      {cat:"ingles", q:"To unfold", a:"aparecer o desarrollarse poco a poco / desplegar, desdoblar."},
+      {cat:"ingles", q:"Twirl", a:"hacer girar (lo que hace el baterista con el palillo, o girar un bastón en un desfile) / hacer piruetas."},
+      {cat:"ingles", q:"Mull over", a:"reflexionar, sopesar."},
+      {cat:"ingles", q:"Stark contrast", a:"marcado contraste."},
+      {cat:"ingles", q:"Make a point of (doing sth)", a:"hacer un esfuerzo consciente y deliberado para hacer algo. Ej: I even made a point of stopping at the store to get it, but then bought everything else but that. / I always make a point to stop by that market when strawberries are in season."},
+      {cat:"ingles", q:"Threshold (zréshjóuld)", a:"umbral."}
+    ]
+  },
+  ingles4_es: {
+    label: "Inglés 4 (ES → EN)",
+    dot: "#5A2E7A",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#5A2E7A"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"Curso, rumbo, trayecto. Se pronuncia \"kórs\".", a:"Course"},
+      {cat:"ingles", q:"alardear, presumir, jactarse de.", a:"To brag about sth"},
+      {cat:"ingles", q:"el comienzo de algo.", a:"The get go"},
+      {cat:"ingles", q:"cómodo, confortable.", a:"Cushy"},
+      {cat:"ingles", q:"ya me lo imaginaba, era obvio.", a:"It figures. Ej: Walter and Donna got married?? It figures."},
+      {cat:"ingles", q:"un anticipo, un vistazo.", a:"A sneak peek"},
+      {cat:"ingles", q:"todos los días.", a:"Day in day out"},
+      {cat:"ingles", q:"cambiar algo.", a:"Turn [sth] around"},
+      {cat:"ingles", q:"opositor, detractor.", a:"Naysayer"},
+      {cat:"ingles", q:"se pronuncia \"kóligs\".", a:"Colleagues"},
+      {cat:"ingles", q:"de dos puntas. Three-pronged: de 3 puntas.", a:"(A) two-pronged (approach)"},
+      {cat:"ingles", q:"desde ahora, a partir de ahora.", a:"As of now"},
+      {cat:"ingles", q:"borrón y cuenta nueva.", a:"Clean slate. Ej: To start with a clean slate."},
+      {cat:"ingles", q:"juego sucio.", a:"Monkey business"},
+      {cat:"ingles", q:"desconcertado, desorientado, perplejo.", a:"Bewildered"},
+      {cat:"ingles", q:"algo inevitable, cantado, obvio desde el primer momento.", a:"A foregone conclusion"},
+      {cat:"ingles", q:"sin la ayuda de telescopio, etc.", a:"With the naked eye / to the naked eye"},
+      {cat:"ingles", q:"hacer que algo se vuelva a tu favor.", a:"To stack the odds (in one's favor)"},
+      {cat:"ingles", q:"incluye solo lo más básico o necesario.", a:"Bare bones. Ej: The free app version is a little bare bones."},
+      {cat:"ingles", q:"restar importancia.", a:"To downplay. Ej: The report downplays the seriousness of global warming."},
+      {cat:"ingles", q:"anotar.", a:"Jot down"},
+      {cat:"ingles", q:"expresar, verbalizar, transmitir (kenvéi).", a:"Convey"},
+      {cat:"ingles", q:"retirar (un ticket comprado por internet, las valijas del avión, etc).", a:"To pick up"},
+      {cat:"ingles", q:"puro, simple, auténtico.", a:"Sheer"},
+      {cat:"ingles", q:"darle manija, subirlo, meterle.", a:"Crank sth up. Ej: Crank it up!"},
+      {cat:"ingles", q:"to be subjected to harsh criticism, to endure criticism.", a:"Take one's licks. Ej: The movie has taken its licks from the reviewers."},
+      {cat:"ingles", q:"en abundancia, en cantidad.", a:"Galore. Ej: Don't worry about finding a place to stay; there are hotels galore in London."},
+      {cat:"ingles", q:"de primer nivel (=top notch).", a:"Top-tier (tier)"},
+      {cat:"ingles", q:"Con respecto a, en cuanto a, sobre. (\"In regardS to\", con s, es muy informal e incorrecto).", a:"In regard to = regarding = about"},
+      {cat:"ingles", q:"Clunky es para cosas (objetos, sistemas, procesos mal diseñados). Clumsy es para personas (torpeza física o al actuar, movimientos, intentos). Sloppy es para trabajo, escritura o ejecución hecha sin cuidado.", a:"Clunky vs Clumsy vs Sloppy"},
+      {cat:"ingles", q:"odioso, repulsivo, ofensivo.", a:"Obnoxious (ebnekshes)"},
+      {cat:"ingles", q:"disfrutar mucho.", a:"To relish"},
+      {cat:"ingles", q:"deshonesto, falso.", a:"Deceitful. Ej: It was deceitful to pretend you didn't know about the accident."},
+      {cat:"ingles", q:"manchar la reputación.", a:"Tarnish reputation"},
+      {cat:"ingles", q:"en el peor de los casos (=if the worst comes to the worst).", a:"If/when push comes to shove"},
+      {cat:"ingles", q:"aparecer o desarrollarse poco a poco / desplegar, desdoblar.", a:"To unfold"},
+      {cat:"ingles", q:"hacer girar (lo que hace el baterista con el palillo, o girar un bastón en un desfile) / hacer piruetas.", a:"Twirl"},
+      {cat:"ingles", q:"reflexionar, sopesar.", a:"Mull over"},
+      {cat:"ingles", q:"marcado contraste.", a:"Stark contrast"},
+      {cat:"ingles", q:"hacer un esfuerzo consciente y deliberado para hacer algo.", a:"Make a point of (doing sth). Ej: I even made a point of stopping at the store to get it, but then bought everything else but that. / I always make a point to stop by that market when strawberries are in season."},
+      {cat:"ingles", q:"umbral.", a:"Threshold (zréshjóuld)"}
+    ]
+  },
+  ingles5_en: {
+    label: "Inglés 5 (EN → ES)",
+    dot: "#8A5A2E",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#8A5A2E"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"Bricks-and-mortar", a:"que existe físicamente. Ej: It's so easy to buy books on the internet but I prefer browsing in a bricks-and-mortar store on the High Street."},
+      {cat:"ingles", q:"Normal wear and tear", a:"el uso normal de algo."},
+      {cat:"ingles", q:"To mistrust", a:"desconfiar."},
+      {cat:"ingles", q:"In fits and starts", a:"a los ponchazos (con irregularidad)."},
+      {cat:"ingles", q:"Turnaround", a:"símil lead time, tiempo de entrega o de trabajo."},
+      {cat:"ingles", q:"Ordeal", a:"calvario, experiencia dura."},
+      {cat:"ingles", q:"To get hold of smn", a:"ubicar."},
+      {cat:"ingles", q:"To dwell on sth", a:"extenderse, dilatarse en algo."},
+      {cat:"ingles", q:"Hasty", a:"apresurado (en el sentido de ansioso), veloz."},
+      {cat:"ingles", q:"To populate", a:"ingresar datos. Ej: Already populated... ya está completo el dato."},
+      {cat:"ingles", q:"The fine print", a:"la letra chica."},
+      {cat:"ingles", q:"Clunky", a:"burdo, torpe, tosco. Se usa para cosas (objetos, sistemas, procesos)."},
+      {cat:"ingles", q:"To foster", a:"fomentar, promover."},
+      {cat:"ingles", q:"To spotlight", a:"centrar la atención, destacar."},
+      {cat:"ingles", q:"Lean", a:"magro, desgrasado."},
+      {cat:"ingles", q:"-wise", a:"En el sentido de..."},
+      {cat:"ingles", q:"Loophole", a:"vacío legal, fisura."},
+      {cat:"ingles", q:"To override sth", a:"ignorar algo."},
+      {cat:"ingles", q:"Caveat", a:"advertencia. Ej: He granted permission, but with quite a few caveats attached."},
+      {cat:"ingles", q:"Gingerly", a:"cautelosamente, cuidadosamente."},
+      {cat:"ingles", q:"To harness", a:"emplear."},
+      {cat:"ingles", q:"On account of", a:"debido a."},
+      {cat:"ingles", q:"Full-fledged = full blown", a:"completamente desarrollado."},
+      {cat:"ingles", q:"To boil down to sth", a:"reducirse a algo, en resumidas cuentas. Ej: If you boil down Machiavelli's philosophy, he is saying that the end justifies the means."},
+      {cat:"ingles", q:"Collect", a:"cobrar."},
+      {cat:"ingles", q:"Wrath", a:"ira, cólera (wrath of god)."},
+      {cat:"ingles", q:"To fetch", a:"ir a buscar, traer."},
+      {cat:"ingles", q:"Clumsy", a:"torpe, burdo."},
+      {cat:"ingles", q:"Forceful", a:"convincente, contundente."},
+      {cat:"ingles", q:"Lurking", a:"acechante, latente, oculto. Ej: The lurking danger of an avalanche made the mountain dwellers nervous."},
+      {cat:"ingles", q:"To make the cut", a:"cumplir con un requisito."},
+      {cat:"ingles", q:"A bummer", a:"una decepción, un bajón."},
+      {cat:"ingles", q:"Bugbear", a:"una pesadilla, en el sentido de fuente de problema, frustración o incomodidad."},
+      {cat:"ingles", q:"Go the extra mile", a:"romperse el lomo."},
+      {cat:"ingles", q:"Whimsical", a:"extravagante, caprichoso. Ej: Edward Lear's poems are far too whimsical for my taste."},
+      {cat:"ingles", q:"Finder's fee", a:"compensación que se le da a un intermediario en una transacción comercial (relación casual entre las partes y el intermediario que las conectó)."},
+      {cat:"ingles", q:"Hassle", a:"problema, dificultad. To hassle: molestar, fastidiar."},
+      {cat:"ingles", q:"Cottage industry", a:"negocio chico, industria artesanal."},
+      {cat:"ingles", q:"Win-place-show", a:"Primero, segundo y tercer puesto (término de apuestas hípicas: ganador, segundo y tercero)."},
+      {cat:"ingles", q:"Forfeit", a:"abandonar, renunciar a algo."},
+      {cat:"ingles", q:"Due", a:"por vencer."}
+    ]
+  },
+  ingles5_es: {
+    label: "Inglés 5 (ES → EN)",
+    dot: "#8A5A2E",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#8A5A2E"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"que existe físicamente.", a:"Bricks-and-mortar. Ej: It's so easy to buy books on the internet but I prefer browsing in a bricks-and-mortar store on the High Street."},
+      {cat:"ingles", q:"el uso normal de algo.", a:"Normal wear and tear"},
+      {cat:"ingles", q:"desconfiar.", a:"To mistrust"},
+      {cat:"ingles", q:"a los ponchazos (con irregularidad).", a:"In fits and starts"},
+      {cat:"ingles", q:"símil lead time, tiempo de entrega o de trabajo.", a:"Turnaround"},
+      {cat:"ingles", q:"calvario, experiencia dura.", a:"Ordeal"},
+      {cat:"ingles", q:"ubicar.", a:"To get hold of smn"},
+      {cat:"ingles", q:"extenderse, dilatarse en algo.", a:"To dwell on sth"},
+      {cat:"ingles", q:"apresurado (en el sentido de ansioso), veloz.", a:"Hasty"},
+      {cat:"ingles", q:"ingresar datos.", a:"To populate. Ej: Already populated... ya está completo el dato."},
+      {cat:"ingles", q:"la letra chica.", a:"The fine print"},
+      {cat:"ingles", q:"burdo, torpe, tosco. Se usa para cosas (objetos, sistemas, procesos).", a:"Clunky"},
+      {cat:"ingles", q:"fomentar, promover.", a:"To foster"},
+      {cat:"ingles", q:"centrar la atención, destacar.", a:"To spotlight"},
+      {cat:"ingles", q:"magro, desgrasado.", a:"Lean"},
+      {cat:"ingles", q:"En el sentido de...", a:"-wise"},
+      {cat:"ingles", q:"vacío legal, fisura.", a:"Loophole"},
+      {cat:"ingles", q:"ignorar algo.", a:"To override sth"},
+      {cat:"ingles", q:"advertencia.", a:"Caveat. Ej: He granted permission, but with quite a few caveats attached."},
+      {cat:"ingles", q:"cautelosamente, cuidadosamente.", a:"Gingerly"},
+      {cat:"ingles", q:"emplear.", a:"To harness"},
+      {cat:"ingles", q:"debido a.", a:"On account of"},
+      {cat:"ingles", q:"completamente desarrollado.", a:"Full-fledged = full blown"},
+      {cat:"ingles", q:"reducirse a algo, en resumidas cuentas.", a:"To boil down to sth. Ej: If you boil down Machiavelli's philosophy, he is saying that the end justifies the means."},
+      {cat:"ingles", q:"cobrar.", a:"Collect"},
+      {cat:"ingles", q:"ira, cólera.", a:"Wrath. Ej: Wrath of god."},
+      {cat:"ingles", q:"ir a buscar, traer.", a:"To fetch"},
+      {cat:"ingles", q:"torpe, burdo.", a:"Clumsy"},
+      {cat:"ingles", q:"convincente, contundente.", a:"Forceful"},
+      {cat:"ingles", q:"acechante, latente, oculto.", a:"Lurking. Ej: The lurking danger of an avalanche made the mountain dwellers nervous."},
+      {cat:"ingles", q:"cumplir con un requisito.", a:"To make the cut"},
+      {cat:"ingles", q:"una decepción, un bajón.", a:"A bummer"},
+      {cat:"ingles", q:"una pesadilla, en el sentido de fuente de problema, frustración o incomodidad.", a:"Bugbear"},
+      {cat:"ingles", q:"romperse el lomo.", a:"Go the extra mile"},
+      {cat:"ingles", q:"extravagante, caprichoso.", a:"Whimsical. Ej: Edward Lear's poems are far too whimsical for my taste."},
+      {cat:"ingles", q:"compensación que se le da a un intermediario en una transacción comercial (relación casual entre las partes y el intermediario que las conectó).", a:"Finder's fee"},
+      {cat:"ingles", q:"problema, dificultad.", a:"Hassle. Ej: To hassle: molestar, fastidiar."},
+      {cat:"ingles", q:"negocio chico, industria artesanal.", a:"Cottage industry"},
+      {cat:"ingles", q:"Primero, segundo y tercer puesto (término de apuestas hípicas: ganador, segundo y tercero).", a:"Win-place-show"},
+      {cat:"ingles", q:"abandonar, renunciar a algo.", a:"Forfeit"},
+      {cat:"ingles", q:"por vencer.", a:"Due"}
+    ]
+  },
+  ingles6_en: {
+    label: "Inglés 6 (EN → ES)",
+    dot: "#2E5A8A",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#2E5A8A"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"Tinkering (with sth)", a:"juguetear."},
+      {cat:"ingles", q:"Power of attorney", a:"poder (legal)."},
+      {cat:"ingles", q:"By and large", a:"en líneas generales. Ej: There are a few small things that I don't like about my job, but by and large it's very enjoyable."},
+      {cat:"ingles", q:"Strike up", a:"comenzar, entablar (una conversación, una amistad)."},
+      {cat:"ingles", q:"Legal representative", a:"apoderado."},
+      {cat:"ingles", q:"Back to back", a:"de forma consecutiva. Ej: You should watch the episodes back to back."},
+      {cat:"ingles", q:"To be true to sth/sb", a:"ser leal a algo/alguien."},
+      {cat:"ingles", q:"Purposefully", a:"a propósito, deliberadamente, intencionalmente. Ej: Either it was purposefully or accidentally…"},
+      {cat:"ingles", q:"Thorough", a:"riguroso, exhaustivo, meticuloso."},
+      {cat:"ingles", q:"Epitomize", a:"encarnar, representar."},
+      {cat:"ingles", q:"Pick it up where you were", a:"retomar de donde estabas."},
+      {cat:"ingles", q:"Overdue = delinquent", a:"vencido."},
+      {cat:"ingles", q:"Uplifting", a:"inspirador."},
+      {cat:"ingles", q:"Midwife", a:"partera."},
+      {cat:"ingles", q:"Amid", a:"entre, en medio de."},
+      {cat:"ingles", q:"Overcast", a:"nublado."},
+      {cat:"ingles", q:"To reward vs to punish (or penalize)", a:"Recompensar vs castigar (o penalizar)."},
+      {cat:"ingles", q:"To steer a ship", a:"manejar un barco."},
+      {cat:"ingles", q:"As for me", a:"por mi parte, de mi parte, en cuanto a mí. Ej: My husband is going to work. As for me, I will stay home and take care of the baby."},
+      {cat:"ingles", q:"To dwell (inf.)", a:"obsecarse, obsesionarse."},
+      {cat:"ingles", q:"Diligent", a:"laborioso, cuidadoso."},
+      {cat:"ingles", q:"Tweak", a:"pequeña modificación. Ej: The machine was almost working; it just needed a couple of tweaks."},
+      {cat:"ingles", q:"But the flip side...", a:"on the other hand..."},
+      {cat:"ingles", q:"Thrive", a:"prosperar, desarrollarse, progresar."},
+      {cat:"ingles", q:"Meander", a:"deambular, callejar (miánder)."},
+      {cat:"ingles", q:"To set sail", a:"zarpar."},
+      {cat:"ingles", q:"To hamper", a:"ralentar, enlentecer, obstaculizar, impedir."},
+      {cat:"ingles", q:"To take exception to", a:"objetar, oponerse. Ej: I take exception to that comment."},
+      {cat:"ingles", q:"Overheads", a:"gastos generales, gastos de estructura."},
+      {cat:"ingles", q:"To be hardwired", a:"Estar predeterminado, programado de forma innata (como si viniera de fábrica)."},
+      {cat:"ingles", q:"Seesaw", a:"subibaja."},
+      {cat:"ingles", q:"Endure", a:"sobrevivir, superar / sufrir, padecer, aguantar. Endure criticism: recibir crítica."},
+      {cat:"ingles", q:"Educated guess", a:"conjetura, estimación, hipótesis fundamentada."},
+      {cat:"ingles", q:"Mock-up", a:"réplica, maqueta. To mock up: maquetar, bosquejar."},
+      {cat:"ingles", q:"Thoroughly", a:"plenamente, completamente, totalmente / cuidadosamente, minuciosamente."},
+      {cat:"ingles", q:"To cut to the chase", a:"ir al grano."},
+      {cat:"ingles", q:"To spell the demise", a:"sentenciar la muerte, el final de algo."},
+      {cat:"ingles", q:"Downtime", a:"inactividad, descanso, pausa."},
+      {cat:"ingles", q:"Iron clad (evidence)", a:"blindado, invulnerable."},
+      {cat:"ingles", q:"Overhaul", a:"reparación, revamping. Ej: This business's procedures need an overhaul."},
+      {cat:"ingles", q:"Peril", a:"peligro, riesgo. In peril: en peligro. At your own peril: a tu propio riesgo."}
+    ]
+  },
+  ingles6_es: {
+    label: "Inglés 6 (ES → EN)",
+    dot: "#2E5A8A",
+    type: "qa",
+    tagColor: {bg:"#DEEDEA", text:"#2E5A8A"},
+    catColors: null,
+    cards: [
+      {cat:"ingles", q:"juguetear.", a:"Tinkering (with sth)"},
+      {cat:"ingles", q:"poder (legal).", a:"Power of attorney"},
+      {cat:"ingles", q:"en líneas generales.", a:"By and large. Ej: There are a few small things that I don't like about my job, but by and large it's very enjoyable."},
+      {cat:"ingles", q:"comenzar, entablar (una conversación, una amistad).", a:"Strike up"},
+      {cat:"ingles", q:"apoderado.", a:"Legal representative"},
+      {cat:"ingles", q:"de forma consecutiva.", a:"Back to back. Ej: You should watch the episodes back to back."},
+      {cat:"ingles", q:"ser leal a algo/alguien.", a:"To be true to sth/sb"},
+      {cat:"ingles", q:"a propósito, deliberadamente, intencionalmente.", a:"Purposefully. Ej: Either it was purposefully or accidentally…"},
+      {cat:"ingles", q:"riguroso, exhaustivo, meticuloso.", a:"Thorough"},
+      {cat:"ingles", q:"encarnar, representar.", a:"Epitomize"},
+      {cat:"ingles", q:"retomar de donde estabas.", a:"Pick it up where you were"},
+      {cat:"ingles", q:"vencido.", a:"Overdue = delinquent"},
+      {cat:"ingles", q:"inspirador.", a:"Uplifting"},
+      {cat:"ingles", q:"partera.", a:"Midwife"},
+      {cat:"ingles", q:"entre, en medio de.", a:"Amid"},
+      {cat:"ingles", q:"nublado.", a:"Overcast"},
+      {cat:"ingles", q:"Recompensar vs castigar (o penalizar).", a:"To reward vs to punish (or penalize)"},
+      {cat:"ingles", q:"manejar un barco.", a:"To steer a ship"},
+      {cat:"ingles", q:"por mi parte, de mi parte, en cuanto a mí.", a:"As for me. Ej: My husband is going to work. As for me, I will stay home and take care of the baby."},
+      {cat:"ingles", q:"obsecarse, obsesionarse.", a:"To dwell (inf.)"},
+      {cat:"ingles", q:"laborioso, cuidadoso.", a:"Diligent"},
+      {cat:"ingles", q:"pequeña modificación.", a:"Tweak. Ej: The machine was almost working; it just needed a couple of tweaks."},
+      {cat:"ingles", q:"on the other hand...", a:"But the flip side..."},
+      {cat:"ingles", q:"prosperar, desarrollarse, progresar.", a:"Thrive"},
+      {cat:"ingles", q:"deambular, callejar (miánder).", a:"Meander"},
+      {cat:"ingles", q:"zarpar.", a:"To set sail"},
+      {cat:"ingles", q:"ralentar, enlentecer, obstaculizar, impedir.", a:"To hamper"},
+      {cat:"ingles", q:"objetar, oponerse.", a:"To take exception to. Ej: I take exception to that comment."},
+      {cat:"ingles", q:"gastos generales, gastos de estructura.", a:"Overheads"},
+      {cat:"ingles", q:"Estar predeterminado, programado de forma innata (como si viniera de fábrica).", a:"To be hardwired"},
+      {cat:"ingles", q:"subibaja.", a:"Seesaw"},
+      {cat:"ingles", q:"sobrevivir, superar / sufrir, padecer, aguantar.", a:"Endure. Ej: Endure criticism: recibir crítica."},
+      {cat:"ingles", q:"conjetura, estimación, hipótesis fundamentada.", a:"Educated guess"},
+      {cat:"ingles", q:"réplica, maqueta. To mock up: maquetar, bosquejar.", a:"Mock-up"},
+      {cat:"ingles", q:"plenamente, completamente, totalmente / cuidadosamente, minuciosamente.", a:"Thoroughly"},
+      {cat:"ingles", q:"ir al grano.", a:"To cut to the chase"},
+      {cat:"ingles", q:"sentenciar la muerte, el final de algo.", a:"To spell the demise"},
+      {cat:"ingles", q:"inactividad, descanso, pausa.", a:"Downtime"},
+      {cat:"ingles", q:"blindado, invulnerable.", a:"Iron clad (evidence)"},
+      {cat:"ingles", q:"reparación, revamping.", a:"Overhaul. Ej: This business's procedures need an overhaul."},
+      {cat:"ingles", q:"peligro, riesgo.", a:"Peril. Ej: In peril: en peligro. At your own peril: a tu propio riesgo."}
+    ]
+  },
+  varios: {
+    label: "Varios",
+    dot: "#0C447C",
+    tagColor: null, // usa colores por categoría
+    catColors: {
+      negocios: {bg:"#DCEBF8", text:"#0C447C"},
+      cultura: {bg:"#F7E4DA", text:"#712B13"},
+      ciencia: {bg:"#DCF0E6", text:"#085041"},
+      historia: {bg:"#E5E3F9", text:"#3C3489"},
+      filosofia: {bg:"#E7F0D9", text:"#27500A"},
+      reflexion: {bg:"#FBEED3", text:"#633806"},
+      datos: {bg:"#E9E7DE", text:"#444441"}
+    },
+    cards: [
+  {cat:"negocios", text:"Lagging indicators: la métrica ex post (ej. ventas). Leading indicators: la métrica ex ante (leads creados, llamadas, etc)."},
+  {cat:"negocios", text:"Externalidad de red: la utilidad percibida de un bien depende de cuántos otros usuarios lo tengan. Ej: teléfonos, módems, o reviews en una plataforma (se venden muchas o casi ninguna)."},
+  {cat:"negocios", text:"Sesgo de actualidad (recency bias): dar más peso a la información reciente por sobre la histórica."},
+  {cat:"cultura", text:"El 80% de la población de India es hinduista. El 15% es musulmán."},
+  {cat:"cultura", text:"En China no hay una religión principal única, sino un sincretismo de budismo, taoísmo y confucianismo."},
+  {cat:"cultura", text:"El tasbih es el rosario que usan los turcos."},
+  {cat:"ciencia", text:"El hipocampo es la parte del cerebro encargada de la memoria espacial. Es el que falla cuando no sabés dónde dejaste el auto."},
+  {cat:"ciencia", text:"A Sócrates lo sentenciaron a muerte y le hicieron tomar veneno de cicuta (hemlock), que paraliza el cuerpo."},
+  {cat:"ciencia", text:"El acero es hierro + carbono."},
+  {cat:"cultura", text:"El pájaro conocido como \"bicho feo\" es el bienteveo, también llamado pitohué."},
+  {cat:"historia", text:"Los sefardíes son los judíos que vivían en España, expulsados por los Reyes Católicos en 1492. Fueron a Israel, Francia, el imperio otomano, etc."},
+  {cat:"historia", text:"Los askenazíes son los judíos que se asentaron en Europa central, sobre todo Alemania. Desarrollaron su propio idioma: el ídish."},
+  {cat:"historia", text:"Los mizrajíes son los judíos de Oriente Medio y el norte de África."},
+  {cat:"historia", text:"El macartismo refiere a acusaciones de deslealtad o traición sin debido proceso. Se originó en EE. UU. (1950-1956) con el senador Joseph McCarthy, persiguiendo a supuestos comunistas. Inspiró \"Las brujas de Salem\" de Arthur Miller."},
+  {cat:"historia", text:"Hezbollah: partido chiita libanés con brazo político y militar, financiado por Irán y apoyado por Siria. Tiene bancas en el parlamento y controla regiones del Líbano."},
+  {cat:"historia", text:"Estado Islámico: grupo terrorista paramilitar sunita yihadista, con sede en Mosul, Irak."},
+  {cat:"historia", text:"El éxodo jujeño recorrió 250 km."},
+  {cat:"historia", text:"El ejército de los Andes de San Martín tenía 5000 hombres."},
+  {cat:"historia", text:"El cruce de los Andes se hizo en 6 cruces distintos y simultáneos."},
+  {cat:"filosofia", text:"Solipsismo: doctrina filosófica que defiende que el sujeto pensante no puede afirmar ninguna existencia salvo la suya propia."},
+  {cat:"filosofia", text:"Eclecticismo: escuela filosófica nacida en Grecia que escoge, sin principios determinados, ideas y valoraciones de otras escuelas, combinándolas aunque el resultado no forme un todo orgánico."},
+  {cat:"filosofia", text:"Agnosticismo: sostiene que no hay evidencia suficiente para tomar partido por una hipótesis determinada. Para Dawkins, la existencia o no de dios es una hipótesis científica como cualquier otra."},
+  {cat:"reflexion", text:"Hay que ser distintos. Pero una cosa es ser distintos desde la audacia y otra es serlo desde el desconocimiento."},
+  {cat:"reflexion", text:"J. M. Keynes: no hay nada peor que un mal aguantable."},
+  {cat:"reflexion", text:"El mejor momento para plantar un árbol fue hace 20 años; el segundo mejor momento es ahora."},
+  {cat:"negocios", text:"Ley de Metcalfe: el valor de una red es proporcional al cuadrado del número de participantes."},
+  {cat:"negocios", text:"Vanity metrics (métricas de vanidad): métricas fáciles de medir o monitorizar que pueden dar una falsa impresión de crecimiento."},
+  {cat:"negocios", text:"MoSCoW: must-have, should-have, could-have y won't-have (o will not have right now)."},
+  {cat:"negocios", text:"Sell in: ventas del fabricante al canal (distribuidor, mayorista, retail), mide cuánto entra al punto de venta. Sell out: ventas del punto de venta al consumidor final, mide la demanda real."},
+  {cat:"negocios", text:"Idea principal de Porter: hay un sesgo a mirar la competencia de forma muy estrecha, solo entre empresas establecidas, sin considerar las otras 4 fuerzas."},
+  {cat:"negocios", text:"Según Porter, la estrategia de una empresa tiene que ser conocida por los actores de las 5 fuerzas, no un secreto."},
+  {cat:"negocios", text:"Propuesta de valor: declaración clara y concisa que comunica los beneficios únicos de un producto o servicio, explicando por qué elegirlo sobre la competencia."},
+  {cat:"datos", text:"Generación de energía en Argentina: 57% térmica, 39% hidroeléctrica, 5% nuclear."},
+  {cat:"datos", text:"El empleo privado registrado en Argentina está estancado en alrededor de 6,1 millones de personas desde hace 15 años."}
+]
+  },
+  varios_qa: {
+    label: "Varios (preguntas)",
+    dot: "#8A5A2E",
+    type: "qa",
+    tagColor: null,
+    catColors: {
+      negocios: {bg:"#DCEBF8", text:"#0C447C"},
+      cultura: {bg:"#F7E4DA", text:"#712B13"},
+      ciencia: {bg:"#DCF0E6", text:"#085041"},
+      historia: {bg:"#E5E3F9", text:"#3C3489"},
+      filosofia: {bg:"#E7F0D9", text:"#27500A"},
+      reflexion: {bg:"#FBEED3", text:"#633806"},
+      datos: {bg:"#E9E7DE", text:"#444441"}
+    },
+    cards: [
+      {cat:"negocios", q:"¿Cuál es la diferencia entre lagging indicators y leading indicators?", a:"Lagging indicators: la métrica ex post (ej. ventas). Leading indicators: la métrica ex ante (leads creados, llamadas, etc)."},
+      {cat:"negocios", q:"¿Qué es la externalidad de red?", a:"La utilidad percibida de un bien depende de cuántos otros usuarios lo tengan. Ej: teléfonos, módems, o reviews en una plataforma (se venden muchas o casi ninguna)."},
+      {cat:"negocios", q:"¿Qué es el sesgo de actualidad (recency bias)?", a:"Dar más peso a la información reciente por sobre la histórica."},
+      {cat:"negocios", q:"¿Qué dice la ley de Metcalfe?", a:"El valor de una red es proporcional al cuadrado del número de participantes."},
+      {cat:"negocios", q:"¿Qué son las vanity metrics?", a:"Métricas fáciles de medir o monitorizar que pueden dar una falsa impresión de crecimiento."},
+      {cat:"negocios", q:"¿Qué significa el método MoSCoW?", a:"Must-have, should-have, could-have y won't-have (o will not have right now)."},
+      {cat:"negocios", q:"¿Cuál es la diferencia entre sell in y sell out?", a:"Sell in: ventas del fabricante al canal, mide cuánto entra al punto de venta. Sell out: ventas del punto de venta al consumidor final, mide la demanda real."},
+      {cat:"negocios", q:"¿Cuál es la idea principal de Porter sobre cómo se suele mirar a la competencia?", a:"Hay un sesgo a mirarla de forma muy estrecha, solo entre empresas establecidas, sin considerar las otras 4 fuerzas."},
+      {cat:"negocios", q:"Según Porter, ¿la estrategia de una empresa debería ser secreta?", a:"No: tiene que ser conocida por los actores de las 5 fuerzas."},
+      {cat:"negocios", q:"¿Qué es la propuesta de valor?", a:"Declaración clara y concisa que comunica los beneficios únicos de un producto o servicio, explicando por qué elegirlo sobre la competencia."},
+      {cat:"cultura", q:"¿Qué porcentaje de la población de India es hinduista y qué porcentaje musulmana?", a:"80% hinduista, 15% musulmana."},
+      {cat:"cultura", q:"¿Cuál es la religión principal en China?", a:"No hay una única religión principal, sino un sincretismo de budismo, taoísmo y confucianismo."},
+      {cat:"cultura", q:"¿Qué es el tasbih?", a:"El rosario que usan los turcos."},
+      {cat:"cultura", q:"¿Cómo se llama el pájaro conocido como \"bicho feo\"?", a:"El bienteveo, también llamado pitohué."},
+      {cat:"ciencia", q:"¿Qué parte del cerebro es responsable de la memoria espacial?", a:"El hipocampo."},
+      {cat:"ciencia", q:"¿Cómo murió Sócrates?", a:"Lo sentenciaron a muerte y le hicieron tomar veneno de cicuta (hemlock), que paraliza el cuerpo."},
+      {cat:"ciencia", q:"¿De qué está hecho el acero?", a:"Hierro + carbono."},
+      {cat:"historia", q:"¿Quiénes son los sefardíes?", a:"Los judíos que vivían en España, expulsados por los Reyes Católicos en 1492. Fueron a Israel, Francia, el imperio otomano, etc."},
+      {cat:"historia", q:"¿Quiénes son los askenazíes?", a:"Judíos que se asentaron en Europa central, sobre todo Alemania. Desarrollaron su propio idioma: el ídish."},
+      {cat:"historia", q:"¿Quiénes son los mizrajíes?", a:"Judíos de Oriente Medio y el norte de África."},
+      {cat:"historia", q:"¿Qué es el macartismo?", a:"Acusaciones de deslealtad o traición sin debido proceso. Se originó en EE. UU. (1950-1956) con el senador Joseph McCarthy, persiguiendo a supuestos comunistas. Inspiró \"Las brujas de Salem\" de Arthur Miller."},
+      {cat:"historia", q:"¿Qué es Hezbollah?", a:"Partido chiita libanés con brazo político y militar, financiado por Irán y apoyado por Siria. Tiene bancas en el parlamento y controla regiones del Líbano."},
+      {cat:"historia", q:"¿Qué es el Estado Islámico?", a:"Grupo terrorista paramilitar sunita yihadista, con sede en Mosul, Irak."},
+      {cat:"historia", q:"¿Cuántos km recorrió el éxodo jujeño?", a:"250 km."},
+      {cat:"historia", q:"¿Cuántos hombres tenía el ejército de los Andes de San Martín?", a:"5000 hombres."},
+      {cat:"historia", q:"¿En cuántos cruces distintos y simultáneos se hizo el cruce de los Andes?", a:"6 cruces."},
+      {cat:"filosofia", q:"¿Qué es el solipsismo?", a:"Doctrina filosófica que defiende que el sujeto pensante no puede afirmar ninguna existencia salvo la suya propia."},
+      {cat:"filosofia", q:"¿Qué es el eclecticismo?", a:"Escuela filosófica nacida en Grecia que escoge, sin principios determinados, ideas y valoraciones de otras escuelas, combinándolas aunque el resultado no forme un todo orgánico."},
+      {cat:"filosofia", q:"¿Qué sostiene el agnosticismo?", a:"Que no hay evidencia suficiente para tomar partido por una hipótesis determinada. Para Dawkins, la existencia o no de dios es una hipótesis científica como cualquier otra."},
+      {cat:"reflexion", q:"Completá: \"Hay que ser distintos. Pero una cosa es ser distintos desde la audacia y otra es...\"", a:"...serlo desde el desconocimiento."},
+      {cat:"reflexion", q:"¿Qué dijo J. M. Keynes sobre \"un mal aguantable\"?", a:"No hay nada peor que un mal aguantable."},
+      {cat:"reflexion", q:"¿Cuál es la frase sobre el mejor momento para plantar un árbol?", a:"El mejor momento para plantar un árbol fue hace 20 años; el segundo mejor momento es ahora."},
+      {cat:"datos", q:"¿Cómo se compone la generación de energía en Argentina?", a:"57% térmica, 39% hidroeléctrica, 5% nuclear."},
+      {cat:"datos", q:"¿Cómo evolucionó el empleo privado registrado en Argentina en los últimos 15 años?", a:"Está estancado en alrededor de 6,1 millones de personas."}
+    ]
+  }
+
+};
+
+// ============ GRUPOS (para acceder filtrado desde el índice general) ============
+const GROUPS = {
+  'italiano-mas': { title: 'Más vocabulario', sub: 'Italiano — tarjetas sueltas', match: k => k.startsWith('italiano') },
+  'ingles':       { title: 'Vocabulario inglés', sub: 'Inglés 1 a 6', match: k => k.startsWith('ingles') },
+  'varios':       { title: 'Conocimiento general', sub: 'Varios', match: k => k.startsWith('varios') }
+};
+const urlParams = new URLSearchParams(window.location.search);
+const activeGroupKey = urlParams.get('group');
+const activeGroup = (activeGroupKey && GROUPS[activeGroupKey]) ? GROUPS[activeGroupKey] : null;
+
+function visibleDeckKeys(){
+  const keys = Object.keys(decks);
+  return activeGroup ? keys.filter(activeGroup.match) : keys;
+}
+
+// ============ STATE ============
+let currentDeckKey = null;
+let bag = [];
+let removed = new Set();
+let pinned = new Set();
+let onlyPinned = false;
+let shown = 0;
+let currentIdx = null;
+
+const homeEl = document.getElementById('home');
+const deckViewEl = document.getElementById('deckView');
+const deckListEl = document.getElementById('deckList');
+const card = document.getElementById('card');
+const keepFlag = document.getElementById('keepFlag');
+const dropFlag = document.getElementById('dropFlag');
+
+function removedKey(deckKey){ return 'mazo_removed_' + deckKey; }
+function pinnedKey(deckKey){ return 'mazo_pinned_' + deckKey; }
+
+const hasClaudeStorage = (typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function');
+
+async function storeGet(key){
+  if(hasClaudeStorage){
+    try {
+      const r = await window.storage.get(key, false);
+      return (r && r.value) ? r.value : null;
+    } catch(e) { /* cae al fallback */ }
+  }
+  try { return localStorage.getItem(key); } catch(e) { return null; }
+}
+
+async function storeSet(key, value){
+  if(hasClaudeStorage){
+    try {
+      await window.storage.set(key, value, false);
+      return;
+    } catch(e) { /* cae al fallback */ }
+  }
+  try { localStorage.setItem(key, value); } catch(e) {}
+}
+
+async function loadSet(key){
+  const raw = await storeGet(key);
+  if(!raw) return new Set();
+  try { return new Set(JSON.parse(raw)); } catch(e) { return new Set(); }
+}
+
+async function saveRemoved(deckKey){
+  await storeSet(removedKey(deckKey), JSON.stringify(Array.from(removed)));
+}
+
+async function savePinned(deckKey){
+  await storeSet(pinnedKey(deckKey), JSON.stringify(Array.from(pinned)));
+}
+
+async function renderHome(){
+  document.getElementById('homeTitle').textContent = activeGroup ? activeGroup.title : 'Mis mazos';
+  document.getElementById('homeSub').textContent = activeGroup ? activeGroup.sub : 'Tocá un mazo para repasarlo';
+  deckListEl.innerHTML = '';
+  for(const key of visibleDeckKeys()){
+    const deck = decks[key];
+    const rem = await loadSet(removedKey(key));
+    const pin = await loadSet(pinnedKey(key));
+    const total = deck.cards.length;
+    const discarded = rem.size;
+    const kept = pin.size;
+    const notes = [];
+    if(discarded) notes.push(discarded + ' sabidas');
+    if(kept) notes.push(kept + ' favoritas');
+    const tile = document.createElement('div');
+    tile.className = 'deck-tile';
+    tile.innerHTML = `
+      <div class="deck-left">
+        <div class="deck-dot" style="background:${deck.dot}"></div>
+        <div class="deck-name">${deck.label}</div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div class="deck-meta">${total - discarded} / ${total}${notes.length ? '<br>' + notes.join(' · ') : ''}</div>
+        <div class="chev">›</div>
+      </div>
+    `;
+    tile.addEventListener('click', () => openDeck(key));
+    deckListEl.appendChild(tile);
+  }
+}
+
+async function openDeck(key){
+  currentDeckKey = key;
+  shown = 0;
+  onlyPinned = false;
+  removed = await loadSet(removedKey(key));
+  pinned = await loadSet(pinnedKey(key));
+  refillBag();
+  document.getElementById('deckTitle').textContent = decks[key].label;
+  homeEl.style.display = 'none';
+  deckViewEl.style.display = 'block';
+  render();
+}
+
+function backToHome(){
+  deckViewEl.style.display = 'none';
+  homeEl.style.display = 'block';
+  renderHome();
+}
+
+function activeIndices(){
+  const deck = decks[currentDeckKey];
+  return deck.cards
+    .map((c,i)=>i)
+    .filter(i => !removed.has(i) && (!onlyPinned || pinned.has(i)));
+}
+
+function refillBag(){
+  bag = activeIndices();
+  for(let i=bag.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [bag[i],bag[j]] = [bag[j],bag[i]];
+  }
+}
+
+function updateFooter(){
+  document.getElementById('discardedCount').textContent = removed.size;
+  document.getElementById('pinnedCount').textContent = pinned.size;
+  const filterLink = document.getElementById('filterLink');
+  filterLink.textContent = onlyPinned ? 'ver todo el mazo' : 'repasar solo favoritas';
+  filterLink.style.display = (pinned.size > 0 || onlyPinned) ? 'inline' : 'none';
+  const resetLink = document.getElementById('resetLink');
+  resetLink.style.display = pinned.size > 0 ? 'inline' : 'none';
+  document.getElementById('footerSep').style.display = (pinned.size > 0 && filterLink.style.display !== 'none') ? 'inline' : 'none';
+}
+
+function updateKeepBtn(){
+  const btn = document.getElementById('keepBtn');
+  if(currentIdx === null){ btn.style.display = 'none'; return; }
+  btn.style.display = 'inline-flex';
+  const isPinned = pinned.has(currentIdx);
+  btn.textContent = isPinned ? '★ favorita — quitar' : '☆ favorita';
+  btn.className = isPinned ? 'pinned' : '';
+}
+
+let flipped = false;
+
+function updateHint(){
+  const deck = decks[currentDeckKey];
+  const hintEl = document.getElementById('hint');
+  if(deck.type === 'qa'){
+    hintEl.textContent = flipped
+      ? 'tocá para ver la pregunta · ← ya la sé · no la sé →'
+      : 'tocá para ver la respuesta · ← ya la sé · no la sé →';
+  } else {
+    hintEl.textContent = 'tocá para pasar · ← ya la sé (sale del mazo) · no la sé → (sigue)';
+  }
+}
+
+function render(){
+  const deck = decks[currentDeckKey];
+  const activeTotal = activeIndices().length;
+  flipped = false;
+  if(activeTotal <= 0){
+    document.getElementById('tag').textContent = '';
+    document.getElementById('content').innerHTML = onlyPinned
+      ? 'No te queda ninguna tarjeta favorita en este mazo.'
+      : 'Completaste el mazo. Reiniciá para volver a verlas todas.';
+    document.getElementById('counter').textContent = '';
+    document.getElementById('pinBadge').style.display = 'none';
+    currentIdx = null;
+    updateFooter();
+    updateKeepBtn();
+    return;
+  }
+  if(bag.length === 0) refillBag();
+  const idx = bag.pop();
+  currentIdx = idx;
+  const c = deck.cards[idx];
+  shown++;
+  const tagEl = document.getElementById('tag');
+  const col = deck.tagColor ? deck.tagColor : deck.catColors[c.cat];
+  tagEl.textContent = c.cat;
+  tagEl.style.background = col.bg;
+  tagEl.style.color = col.text;
+  document.getElementById('pinBadge').style.display = pinned.has(idx) ? 'inline' : 'none';
+  document.getElementById('content').innerHTML = deck.type === 'qa' ? c.q : c.text;
+  document.getElementById('counter').textContent = shown + ' / ' + activeTotal;
+  updateFooter();
+  updateKeepBtn();
+  updateHint();
+}
+
+function toggleFlip(){
+  const deck = decks[currentDeckKey];
+  if(deck.type !== 'qa' || currentIdx === null) return;
+  flipped = !flipped;
+  const c = deck.cards[currentIdx];
+  document.getElementById('content').innerHTML = flipped ? c.a : c.q;
+  updateHint();
+}
+
+function goNext(dropCurrent){
+  if(dropCurrent && currentIdx !== null){
+    removed.add(currentIdx);
+    saveRemoved(currentDeckKey);
+    if(pinned.has(currentIdx)){
+      pinned.delete(currentIdx);
+      savePinned(currentDeckKey);
+    }
+  }
+  card.style.transform = dropCurrent ? 'translateX(-120%) rotate(-8deg)' : 'translateX(120%) rotate(8deg)';
+  card.style.opacity = '0';
+  keepFlag.style.opacity = '0';
+  dropFlag.style.opacity = '0';
+  setTimeout(()=>{
+    render();
+    card.style.transition = 'none';
+    card.style.transform = 'translateX(0)';
+    requestAnimationFrame(()=>{
+      card.style.transition = 'transform 0.18s ease, opacity 0.18s ease';
+      card.style.opacity = '1';
+    });
+  }, 180);
+}
+
+card.addEventListener('click', () => {
+  if(dragged) return;
+  const deck = decks[currentDeckKey];
+  if(deck.type === 'qa') toggleFlip();
+  else goNext(false);
+});
+
+let startX = 0, startY = 0, dragging = false, dragged = false, activePointerId = null;
+card.addEventListener('pointerdown', e => {
+  startX = e.clientX;
+  startY = e.clientY;
+  dragging = true;
+  dragged = false;
+  activePointerId = e.pointerId;
+  try { card.setPointerCapture(e.pointerId); } catch(err) {}
+});
+card.addEventListener('pointermove', e => {
+  if(!dragging || e.pointerId !== activePointerId) return;
+  const dx = e.clientX - startX;
+  if(Math.abs(dx) > 10) dragged = true;
+  card.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx/18) + 'deg)';
+  if(dx > 20){ keepFlag.style.opacity = Math.min(dx/80,1); dropFlag.style.opacity = 0; }
+  else if(dx < -20){ dropFlag.style.opacity = Math.min(-dx/80,1); keepFlag.style.opacity = 0; }
+  else { keepFlag.style.opacity = 0; dropFlag.style.opacity = 0; }
+});
+function endDrag(e){
+  if(!dragging || e.pointerId !== activePointerId) return;
+  dragging = false;
+  const dx = e.clientX - startX;
+  const dy = e.clientY - startY;
+  if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)){
+    goNext(dx < 0);
+  } else {
+    card.style.transform = 'translateX(0)';
+    keepFlag.style.opacity = 0;
+    dropFlag.style.opacity = 0;
+  }
+}
+card.addEventListener('pointerup', endDrag);
+card.addEventListener('pointercancel', endDrag);
+
+const backBtnEl = document.getElementById('backBtn');
+backBtnEl.addEventListener('click', backToHome);
+backBtnEl.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  backToHome();
+});
+
+const keepBtnEl = document.getElementById('keepBtn');
+keepBtnEl.addEventListener('click', async (e) => {
+  e.stopPropagation();
+  if(currentIdx === null) return;
+  if(pinned.has(currentIdx)) pinned.delete(currentIdx);
+  else pinned.add(currentIdx);
+  await savePinned(currentDeckKey);
+  document.getElementById('pinBadge').style.display = pinned.has(currentIdx) ? 'inline' : 'none';
+  updateKeepBtn();
+  updateFooter();
+});
+
+document.getElementById('filterLink').addEventListener('click', (e) => {
+  e.stopPropagation();
+  onlyPinned = !onlyPinned;
+  shown = 0;
+  refillBag();
+  render();
+});
+
+document.getElementById('resetLink').addEventListener('click', async (e) => {
+  e.stopPropagation();
+  if(pinned.size === 0){ return; }
+  if(!confirm('¿Quitar la marca de favorita de las ' + pinned.size + ' tarjetas de este mazo? Las que ya diste por sabidas no se tocan.')) return;
+  pinned = new Set();
+  onlyPinned = false;
+  await storeSet(pinnedKey(currentDeckKey), JSON.stringify([]));
+  shown = 0;
+  refillBag();
+  render();
+});
+
+renderHome();
+</script>
+</body>
+</html>
