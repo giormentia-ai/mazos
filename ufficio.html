@@ -735,7 +735,7 @@ async function cambiaDirezione(nuova){
 /* ============ SESIÓN DE ESTUDIO ============ */
 function avvia(ids, titolo, i){
   coda = ids.slice();
-  if(i===undefined){ for(let k=coda.length-1;k>0;k--){ const j=Math.floor(Math.random()*(k+1)); [coda[k],coda[j]]=[coda[j],coda[k]]; } }
+  for(let k=coda.length-1;k>0;k--){ const j=Math.floor(Math.random()*(k+1)); [coda[k],coda[j]]=[coda[j],coda[k]]; }
   mazoAttivo = i;
   indice = 0; ultima = null;
   $("#btn-undo").disabled = true;
